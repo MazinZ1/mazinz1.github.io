@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Variance in Scala | Hexo</title>
+  <title>Variance in Scala | Echoes from the deep</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="This is my note on the variance section in Coursera Functional Programming in Scala.
 Scala supports two forms of polymorphism: sub-typing and generics. Not only does the type system needs to deal with">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Variance in Scala">
-<meta property="og:url" content="http://yoursite.com/2014/06/06/2014-06-06-variance-in-scala/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:url" content="http://mazinz1.github.io/2014/06/06/variance-in-scala/index.html">
+<meta property="og:site_name" content="Echoes from the deep">
 <meta property="og:description" content="This is my note on the variance section in Coursera Functional Programming in Scala.
 Scala supports two forms of polymorphism: sub-typing and generics. Not only does the type system needs to deal with">
 <meta property="og:updated_time" content="2015-05-23T07:22:04.000Z">
@@ -18,11 +18,12 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
 <meta name="twitter:title" content="Variance in Scala">
 <meta name="twitter:description" content="This is my note on the variance section in Coursera Functional Programming in Scala.
 Scala supports two forms of polymorphism: sub-typing and generics. Not only does the type system needs to deal with">
+<meta name="twitter:creator" content="@mazin_z1">
   
-    <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternative" href="/atom.xml" title="Echoes from the deep" type="application/atom+xml">
   
   
-    <link rel="icon" href="/favicon.png">
+    <link rel="icon" href="/favicon.ico">
   
   <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -37,7 +38,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">Echoes from the deep</a>
       </h1>
       
     </div>
@@ -57,15 +58,15 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
         <a id="nav-search-btn" class="nav-icon" title="Search"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://mazinz1.github.io"></form>
       </div>
     </div>
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-2014-06-06-variance-in-scala" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-variance-in-scala" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2014/06/06/2014-06-06-variance-in-scala/" class="article-date">
+    <a href="/2014/06/06/variance-in-scala/" class="article-date">
   <time datetime="2014-06-06T07:00:00.000Z" itemprop="datePublished">2014-06-06</time>
 </a>
     
@@ -153,7 +154,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2014/06/06/2014-06-06-variance-in-scala/" data-id="cia0pksgb000er0takdk6s4du" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cia0pvaz9000duqtah64ug1vf" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/en/">en</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pl/">pl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li></ul>
@@ -164,7 +165,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
     
 <nav id="article-nav">
   
-    <a href="/2015/01/24/2015-01-24-on-oil/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2015/01/24/on-oil/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
@@ -174,7 +175,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
     </a>
   
   
-    <a href="/2014/05/28/2014-05-28-the-last-thing-d-needs/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2014/05/28/the-last-thing-d-needs/" id="article-nav-older" class="article-nav-link-wrap">
       <strong class="article-nav-caption">Older</strong>
       <div class="article-nav-title">The Last Thing D Needs</div>
     </a>
@@ -231,23 +232,23 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
       <ul>
         
           <li>
-            <a href="/2015/01/24/2015-01-24-on-oil/">最近油价变动的一些笔记</a>
+            <a href="/2015/01/24/on-oil/">最近油价变动的一些笔记</a>
           </li>
         
           <li>
-            <a href="/2014/06/06/2014-06-06-variance-in-scala/">Variance in Scala</a>
+            <a href="/2014/06/06/variance-in-scala/">Variance in Scala</a>
           </li>
         
           <li>
-            <a href="/2014/05/28/2014-05-28-the-last-thing-d-needs/">The Last Thing D Needs</a>
+            <a href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
           </li>
         
           <li>
-            <a href="/2014/05/17/2014-05-17-nvm/">使用NVM管理Node.js</a>
+            <a href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
           </li>
         
           <li>
-            <a href="/2014/05/09/2014-05-09-scala-basics/">Scala基本语法与概念笔记</a>
+            <a href="/2014/05/09/scala-basics/">Scala基本语法与概念笔记</a>
           </li>
         
       </ul>
@@ -262,7 +263,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2015 John Doe<br>
+      &copy; 2015 MazinZ1<br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
