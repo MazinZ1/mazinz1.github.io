@@ -1,94 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Echoes from the deep]]></title>
   
-  <title>Echoes from the deep</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Echoes from the deep">
-<meta property="og:url" content="http://mazinz1.github.io/index.html">
-<meta property="og:site_name" content="Echoes from the deep">
-<meta property="og:description">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Echoes from the deep">
-<meta name="twitter:description">
-<meta name="twitter:creator" content="@mazin_z1">
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://mazinz1.github.io/"/>
+  <updated>2015-05-23T07:22:13.000Z</updated>
+  <id>http://mazinz1.github.io/</id>
   
-    <link rel="alternative" href="/atom.xml" title="Echoes from the deep" type="application/atom+xml">
-  
-  
-    <link rel="icon" href="/favicon.ico">
-  
-  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="/css/style.css" type="text/css">
-  
-
-</head>
-<body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Echoes from the deep</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" results="0" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://mazinz1.github.io"></form>
-      </div>
-    </div>
-  </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-on-oil" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2015/01/24/on-oil/" class="article-date">
-  <time datetime="2015-01-24T08:00:00.000Z" itemprop="datePublished">2015-01-24</time>
-</a>
+  <author>
+    <name><![CDATA[MazinZ1]]></name>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/economics/">economics</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+  </author>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/24/on-oil/">最近油价变动的一些笔记</a>
-    </h1>
+  <generator uri="http://hexo.io/">Hexo</generator>
   
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便宜了。</p>
+  <entry>
+    <title><![CDATA[最近油价变动的一些笔记]]></title>
+    <link href="http://mazinz1.github.io/2015/01/24/on-oil/"/>
+    <id>http://mazinz1.github.io/2015/01/24/on-oil/</id>
+    <published>2015-01-24T08:00:00.000Z</published>
+    <updated>2015-05-23T07:22:13.000Z</updated>
+    <content type="html"><![CDATA[<p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便宜了。</p>
 <p>事实上，这半年里油价已经暴跌了超过50%了。去年6月时，每桶的油价还一度停留在$100的位置，而今天的每桶油价已经到达$45了(<a href="http://www.nasdaq.com/markets/crude-oil.aspx?timeframe=1y" target="_blank" rel="external">source</a>)。这次暴跌的原因不外乎是供求关系：萧条的国际经济所消耗的石油比市场预期的低，而同时OPEC出产了高于市场预期的石油。而美国疯狂的页岩气开采更是为本来供求不衡的局面火上加油：自从2010年来，美国可能新建了将近20000个新的页岩气井(<a href="http://www.economist.com/news/leaders/21635472-economics-oil-have-changed-some-businesses-will-go-bust-market-will-be" target="_blank" rel="external">source</a>)。通过页岩气，美国已经提升了1/3的油产量。</p>
 <p>油价的下跌总体来说对消费者是有益的，尤其是对于原油进口国。下跌的油价会进一步减少通货膨胀，同时也有可能让中央银行采取更宽松的货币政策。然而对于石油出产国，例如俄罗斯和加拿大，这次大规模的石油价格下跌对它们的经济造成了很大影响。而加拿大的石油资源是油砂，其开采成本本来就偏高；当油价一下挫，开采计划在经济上就不可行。几天前，加拿大银行进一步调低了本来已经很低的利率，而加元的汇率经一步下挫，春季的物价上涨已是无法避免。</p>
 <p>OPEC，尤其是里面领头的沙特阿拉伯，完全有可能通过减产来提高原油价格。事实上，OPEC上的几个成员已经提出希望减产来把石油价格推回更好的位置。可是沙特阿拉伯并不希望降低产量而流失市场份额，而相反他们希望采取压低石油价格的方式来赢得和页岩气的竞争。毕竟沙特的石油开采成本非常低（每桶只需要$5-$6），他们完全有资本进行产量和价格竞争。而因为页岩气的生命周期很短，页岩气开发者必须获得持续的资本投入来开发新油井来维持产量。不少页岩气开发者是带着债务开始工程的。随着油价的暴跌，不少公司背负着破产的风险。根据估计，美国的页岩气工程必须在$60-70才能维持收支平衡。现在的价格很有可能迫使资本撤离页岩气工程，而后的结果很有可能是页岩气减产和石油价格上调。</p>
@@ -98,49 +30,26 @@
 <li><a href="http://www.economist.com/news/finance-and-economics/21635505-will-falling-oil-prices-curb-americas-shale-boom-bind" target="_blank" rel="external">Shale oil: In a bind</a></li>
 <li><a href="https://www.google.com/url?q=http://www.economist.com/news/finance-and-economics/21635510-what-oil-cartel-up-making-best-low-price" target="_blank" rel="external">OPEC: Making the best of a low price</a></li>
 </ol>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cia0ql7290007zwtazcnoub4k" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/energy/">energy</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-variance-in-scala" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/06/06/variance-in-scala/" class="article-date">
-  <time datetime="2014-06-06T07:00:00.000Z" itemprop="datePublished">2014-06-06</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="energy" scheme="http://mazinz1.github.io/tags/energy/"/>
     
-      <header class="article-header">
-        
+      <category term="economics" scheme="http://mazinz1.github.io/categories/economics/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/06/06/variance-in-scala/">Variance in Scala</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
+  <entry>
+    <title><![CDATA[Variance in Scala]]></title>
+    <link href="http://mazinz1.github.io/2014/06/06/variance-in-scala/"/>
+    <id>http://mazinz1.github.io/2014/06/06/variance-in-scala/</id>
+    <published>2014-06-06T07:00:00.000Z</published>
+    <updated>2015-05-23T07:22:04.000Z</updated>
+    <content type="html"><![CDATA[<p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
 <p>Scala supports two forms of polymorphism: <em>sub-typing</em> and <em>generics</em>. Not only does the type system needs to deal with both of them independently, it also needs to correctly resolve their interactions. </p>
 <h2 id="Type_Bounds">Type Bounds</h2><p>In order to express the sub-typing relationship between type parameters, we need to introduce the concept of <em>type bounds</em>:</p>
 <ul>
@@ -200,49 +109,28 @@
 <h2 id="History">History</h2><ul>
 <li>Jun 6, 2014 04:00:56 First commit</li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cia0ql72c000dzwtahfvxoce0" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/en/">en</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pl/">pl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-the-last-thing-d-needs" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/05/28/the-last-thing-d-needs/" class="article-date">
-  <time datetime="2014-05-28T07:00:00.000Z" itemprop="datePublished">2014-05-28</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Cou]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="en" scheme="http://mazinz1.github.io/tags/en/"/>
     
+      <category term="pl" scheme="http://mazinz1.github.io/tags/pl/"/>
     
-      <header class="article-header">
-        
+      <category term="scala" scheme="http://mazinz1.github.io/tags/scala/"/>
+    
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>“I am not here to bash C++” — Scott Meyers, 2014</p>
+  <entry>
+    <title><![CDATA[The Last Thing D Needs]]></title>
+    <link href="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/"/>
+    <id>http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/</id>
+    <published>2014-05-28T07:00:00.000Z</published>
+    <updated>2015-05-23T07:21:55.000Z</updated>
+    <content type="html"><![CDATA[<p>“I am not here to bash C++” — Scott Meyers, 2014</p>
 <p>今年DConf把Scott Meyers (Effetive C++系列的作者) 请过来做<a href="http://www.ustream.tv/recorded/47947981" target="_blank" rel="external">演讲</a>。打开前我还疑惑地以为Meyers难道开始D语言的传道了，可是一开始看到他一脸假正经地宣称自己不是过来羞辱C++的，我就明白这是又一出挂羊头卖狗肉的C++鞭笞秀了XDDDD。抱着娱乐的心情看完，却发现感想远超预期。也许是因为场合不同，这次Meyers的演讲完全跳出了他之前”Meyers knows all”的老调，而是通过自己对C++的理解进行了相当有趣的吐槽，而且中间插的段子也是笑点十足。强烈推荐给关注近期C++发展的程序员。</p>
 <p>下面是对这次演讲的一些笔记。</p>
 <p>———</p>
@@ -357,49 +245,27 @@
 <li><a href="http://thbecker.net/articles/rvalue_references/section_01.html" target="_blank" rel="external">C++ Rvalue References Explained</a></li>
 <li><a href="http://eli.thegreenplace.net/2012/02/06/dependent-name-lookup-for-c-templates/" target="_blank" rel="external">Dependent name lookup for C++ templates</a></li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cia0ql72f000mzwta0evpvcee" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-nvm" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/05/17/nvm/" class="article-date">
-  <time datetime="2014-05-17T07:00:00.000Z" itemprop="datePublished">2014-05-17</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>“I am not here to bash C++” — Scott Meyers, 2014</p>
+<p>今年DConf把Scott Meyers (Effetive C++系列的作者) 请过来做<a href="http://www.ustream.tv/recor]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="c++" scheme="http://mazinz1.github.io/tags/c/"/>
     
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
-      <header class="article-header">
-        
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
+  <entry>
+    <title><![CDATA[使用NVM管理Node.js]]></title>
+    <link href="http://mazinz1.github.io/2014/05/17/nvm/"/>
+    <id>http://mazinz1.github.io/2014/05/17/nvm/</id>
+    <published>2014-05-17T07:00:00.000Z</published>
+    <updated>2015-05-23T07:21:44.000Z</updated>
+    <content type="html"><![CDATA[<h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
 </code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code><span class="tag">nvm</span> <span class="tag">install</span> 0<span class="class">.10</span><span class="class">.28</span>
 <span class="tag">nvm</span> <span class="tag">use</span> 0<span class="class">.10</span><span class="class">.28</span>
 <span class="tag">nvm</span> <span class="tag">alias</span> <span class="tag">default</span> 0<span class="class">.10</span><span class="class">.28</span>
@@ -413,49 +279,28 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 <h2 id="Reference">Reference</h2><ul>
 <li><a href="https://www.digitalocean.com/community/articles/how-to-install-node-js-with-nvm-node-version-manager-on-a-vps" target="_blank" rel="external">How To Install Node.js with NVM (Node Version Manager) on a VPS</a></li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cia0ql72h000rzwtaiw31tbmz" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/webdev/">webdev</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-scala-basics" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2014/05/09/scala-basics/" class="article-date">
-  <time datetime="2014-05-09T07:00:00.000Z" itemprop="datePublished">2014-05-09</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/ma]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="node.js" scheme="http://mazinz1.github.io/tags/node-js/"/>
     
-      <header class="article-header">
-        
+      <category term="webdev" scheme="http://mazinz1.github.io/tags/webdev/"/>
+    
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/05/09/scala-basics/">Scala基本语法与概念笔记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供部分的实际参数，而另外一部分参数则使用<code>_</code>来代替，这样会得到另外一个函数。<code>_</code>实际上起到一个匿名通配符 (unnamed wildcard) 的作用。</p>
+  <entry>
+    <title><![CDATA[Scala基本语法与概念笔记]]></title>
+    <link href="http://mazinz1.github.io/2014/05/09/scala-basics/"/>
+    <id>http://mazinz1.github.io/2014/05/09/scala-basics/</id>
+    <published>2014-05-09T07:00:00.000Z</published>
+    <updated>2015-05-23T07:21:32.000Z</updated>
+    <content type="html"><![CDATA[<h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供部分的实际参数，而另外一部分参数则使用<code>_</code>来代替，这样会得到另外一个函数。<code>_</code>实际上起到一个匿名通配符 (unnamed wildcard) 的作用。</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">adder</span>(</span>m: <span class="type">Int</span>, n: <span class="type">Int</span>) = m + n               <span class="comment">//&gt; adder: (m: Int, n: Int)Int</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">add2</span> =</span> adder(<span class="number">2</span>, _: <span class="type">Int</span>)                     <span class="comment">//&gt; add2  : Int =&gt; Int = &lt;function1&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">add3</span> =</span> adder(_: <span class="type">Int</span>, <span class="number">3</span>)                     <span class="comment">//&gt; add3  : Int =&gt; Int = &lt;function1&gt;</span></span><br></pre></td></tr></table></figure>
 <p>而Currying则是说一个函数能够接受多个函数参数列表。从本质上，这样的函数可以通过使一个函数将另外一个函数作为返回值来实现。以下面为例，最外层的函数<code>sum</code>接受一个函数作为参数，并返回<code>sumInternal</code>作为结果。而在<code>sumInternal</code>的实现是依赖于<code>sum</code>的函数参数的。实际调用<code>sum</code>时的例子为<code>sum((x: Int) =&gt; x * x)(0, 2)</code></p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sum</span>(</span>f: <span class="type">Int</span> =&gt; <span class="type">Int</span>): (<span class="type">Int</span>, <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">sumInternal</span>(</span>a: <span class="type">Int</span>, b: <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</span><br><span class="line">	<span class="keyword">if</span> (a &gt; b) <span class="number">0</span></span><br><span class="line">	<span class="keyword">else</span> f(a) + sumInternal(a + <span class="number">1</span>, b)</span><br><span class="line">  &#125;</span><br><span class="line">  sumInternal</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -485,98 +330,53 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 <h2 id="Reference">Reference</h2><ul>
 <li><a href="http://twitter.github.io/scala_school/" target="_blank" rel="external">Twitter Scala School</a></li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cia0ql72m000yzwta24m2b4qh" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-dangan-ronpa" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/11/30/dangan-ronpa/" class="article-date">
-  <time datetime="2013-11-30T08:00:00.000Z" itemprop="datePublished">2013-11-30</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/review/">review</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="scala" scheme="http://mazinz1.github.io/tags/scala/"/>
     
-      <header class="article-header">
-        
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/11/30/dangan-ronpa/">超高校级的荒诞与超高校级的快感</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
+  <entry>
+    <title><![CDATA[超高校级的荒诞与超高校级的快感]]></title>
+    <link href="http://mazinz1.github.io/2013/11/30/dangan-ronpa/"/>
+    <id>http://mazinz1.github.io/2013/11/30/dangan-ronpa/</id>
+    <published>2013-11-30T08:00:00.000Z</published>
+    <updated>2015-05-23T07:21:21.000Z</updated>
+    <content type="html"><![CDATA[<p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
 <p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形式是真正的亮点：时间限制造成本能的紧张，配合足够的音乐/视觉冲击，便使简单的射击/节奏gameplay带来强烈的沉浸感。速度感，这也是之前的AVG所忽略的地方。以前在进行文字类解密AVG游戏时也或多或少有这样的感觉：虽然我很想看完后面的剧情展开，但是游戏的节奏感实在太慢了！毕竟传统AVG是以故事性剧情展开为主，动作性并非主要要素，而弹丸论破证明了在推理过程中加入动作性的要素，也许并不是坏事。</p>
 <p>相对于游戏形式的新意，故事性的剧情展开倒是比较苍白…因为论战的展开基本上是一直线，游戏里提供了很多线索所以推理很简单，毕竟过多限制下说得通的真相不会很多，再仔细思考一下游戏里的暗示就能找到它期望引导到的方向。可是游戏时过多的提示/限制就让我怀疑玩家行动是否能对故事造成影响，最后不出意料是单线结局，也就是说在(非)日常篇下的行动只是为了获得降低难度的技能和角色的情报而已。(非)日常篇充当的只是让人物形象更加丰满的作用，毕竟这是了解退场过早的角色的唯一方法了，可是当时我可是苦心积累地搜索了校园的每个角落，用SL看过了各种人物的故事的，至少对于我来说，我期望人际关系的变化能够对故事的展开造成更多的影响。</p>
 <p>当然这样的要求也许过于苛刻了……相比较传统AVG来看，弹丸论破无疑是部反传统的作品：强调推理过程的动作性+苍白的剧情变化；我也明白再多的剧情变化也是不能满足玩家的好奇心的。然而，经历了30小时高度紧张和高度沉浸的一周目后，你是不是还想进行基本是一模一样的二周末呢？</p>
 <p>至少对于追求新鲜感的我，答案不言而喻。</p>
 <p><img src="http://i.imgur.com/A1GLQbJ.jpg" alt=""></p>
 <p>EOF</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cia0ql72n0012zwta31b9a00y" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/game/">game</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-xna-vs2012" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/09/14/xna-vs2012/" class="article-date">
-  <time datetime="2013-09-14T07:00:00.000Z" itemprop="datePublished">2013-09-14</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
+<p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="game" scheme="http://mazinz1.github.io/tags/game/"/>
     
-      <header class="article-header">
-        
+      <category term="review" scheme="http://mazinz1.github.io/categories/review/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2013/09/14/xna-vs2012/">如何在VS2012中创建XNA项目</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
+  <entry>
+    <title><![CDATA[如何在VS2012中创建XNA项目]]></title>
+    <link href="http://mazinz1.github.io/2013/09/14/xna-vs2012/"/>
+    <id>http://mazinz1.github.io/2013/09/14/xna-vs2012/</id>
+    <published>2013-09-14T07:00:00.000Z</published>
+    <updated>2015-05-23T07:21:11.000Z</updated>
+    <content type="html"><![CDATA[<p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
 <ul>
 <li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了</li>
 <li>安装最新的<a href="http://www.xbox.com/en-US/LIVE/PC/DownloadClient" target="_blank" rel="external">Windows Marketplace Client</a></li>
@@ -602,49 +402,30 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 <li><a href="http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8" target="_blank" rel="external">How to install the XNA Game Studio 4.0 in Windows 8?</a></li>
 <li><a href="http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx" target="_blank" rel="external">How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8</a></li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cia0ql72q0018zwtaxxu09164" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gamedev/">gamedev</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xna/">xna</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-latency-numbers" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2012/12/31/latency-numbers/" class="article-date">
-  <time datetime="2012-12-31T08:00:00.000Z" itemprop="datePublished">2012-12-31</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
+<ul>
+<li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了<]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="gamedev" scheme="http://mazinz1.github.io/tags/gamedev/"/>
     
-      <header class="article-header">
-        
+      <category term="xna" scheme="http://mazinz1.github.io/tags/xna/"/>
+    
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2012/12/31/latency-numbers/">Latency Numbers Every Programmer Should Know</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,<br>一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
+  <entry>
+    <title><![CDATA[Latency Numbers Every Programmer Should Know]]></title>
+    <link href="http://mazinz1.github.io/2012/12/31/latency-numbers/"/>
+    <id>http://mazinz1.github.io/2012/12/31/latency-numbers/</id>
+    <published>2012-12-31T08:00:00.000Z</published>
+    <updated>2015-05-23T07:20:40.000Z</updated>
+    <content type="html"><![CDATA[<p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,<br>一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
 <p>虽然说是调查, 但如果有人细心观察过<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">页面</a>源代码的话, 其实就能发现作者已经在注释里做了很详细的引用说明了, 所以这篇大抵只是对注释的整理罢了XDDD</p>
 <hr>
 <p>总的来说, 作者用到的数据大部分来自Peter Norvig的<a href="http://norvig.com/21-days.html#answers" target="_blank" rel="external">Teach Yourself Programming in Ten Years</a>和Jeff Dean的<a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en//people/jeff/Stanford-DL-Nov-2010.pdf" target="_blank" rel="external">Building Software Systems at Google and Lessons Learned</a>, 也算是rule of thumb了.同时, 描述硬件的进步趋势时, 大家都爱用”X年翻一倍”这种描述, 所以计算时也是用了简单的指数函数$latex y = a * b ^ x$.</p>
@@ -690,49 +471,26 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 <ul>
 <li>12:17 AM Sunday, December 31, 2012 First commit</li>
 </ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cia0ql72s001fzwta1jdmxhtl" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/system/">system</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-itunes-tag" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2011/11/19/itunes-tag/" class="article-date">
-  <time datetime="2011-11-19T08:00:00.000Z" itemprop="datePublished">2011-11-19</time>
-</a>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer]]>
+    </summary>
     
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/misc/">misc</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
+      <category term="system" scheme="http://mazinz1.github.io/tags/system/"/>
     
-      <header class="article-header">
-        
+      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+    
+  </entry>
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2011/11/19/itunes-tag/">iTunes乱码处理</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+  <entry>
+    <title><![CDATA[iTunes乱码处理]]></title>
+    <link href="http://mazinz1.github.io/2011/11/19/itunes-tag/"/>
+    <id>http://mazinz1.github.io/2011/11/19/itunes-tag/</id>
+    <published>2011-11-19T08:00:00.000Z</published>
+    <updated>2015-05-23T07:20:31.000Z</updated>
+    <content type="html"><![CDATA[<p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
 <p>首先是安装Mutagen</p>
 <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> mutagen</span><br></pre></td></tr></table></figure>
 <p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
@@ -744,125 +502,19 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 <p>EDIT1(May 30, 2014 12:42:34):</p>
 <p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
 <figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install --<span class="keyword">build-from-source </span>readline</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2011/11/19/itunes-tag/" data-id="cia0ql71m0000zwtaxno3x1yf" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/itunes/">itunes</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-  
-</section>
-        
-          <aside id="sidebar">
-  
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+<p>首先是安装Mutagen</p>
+<figure class="highlight ]]>
+    </summary>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
-    <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
-    </div>
-  </div>
-
-  
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cn/">cn</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/en/">en</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/energy/">energy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gamedev/">gamedev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itunes/">itunes</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/">node.js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pl/">pl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scala/">scala</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/system/">system</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webdev/">webdev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xna/">xna</a><span class="tag-list-count">1</span></li></ul>
-    </div>
-  </div>
-
-  
+      <category term="itunes" scheme="http://mazinz1.github.io/tags/itunes/"/>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cn/" style="font-size: 20px;">cn</a> <a href="/tags/en/" style="font-size: 10px;">en</a> <a href="/tags/energy/" style="font-size: 10px;">energy</a> <a href="/tags/game/" style="font-size: 10px;">game</a> <a href="/tags/gamedev/" style="font-size: 10px;">gamedev</a> <a href="/tags/itunes/" style="font-size: 10px;">itunes</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/pl/" style="font-size: 10px;">pl</a> <a href="/tags/scala/" style="font-size: 15px;">scala</a> <a href="/tags/system/" style="font-size: 10px;">system</a> <a href="/tags/webdev/" style="font-size: 10px;">webdev</a> <a href="/tags/xna/" style="font-size: 10px;">xna</a>
-    </div>
-  </div>
-
-  
+      <category term="misc" scheme="http://mazinz1.github.io/categories/misc/"/>
     
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/11/">November 2011</a><span class="archive-list-count">1</span></li></ul>
-    </div>
-  </div>
-
+  </entry>
   
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recents</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2015/01/24/on-oil/">最近油价变动的一些笔记</a>
-          </li>
-        
-          <li>
-            <a href="/2014/06/06/variance-in-scala/">Variance in Scala</a>
-          </li>
-        
-          <li>
-            <a href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
-          </li>
-        
-          <li>
-            <a href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
-          </li>
-        
-          <li>
-            <a href="/2014/05/09/scala-basics/">Scala基本语法与概念笔记</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
-      </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2015 MazinZ1<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
-    </div>
-  </div>
-</footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css">
-  <script src="/fancybox/jquery.fancybox.pack.js" type="text/javascript"></script>
-
-
-<script src="/js/script.js" type="text/javascript"></script>
-
-  </div>
-</body>
-</html>
+</feed>
