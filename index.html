@@ -61,12 +61,16 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Hello-Hexo" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-2014-06-06-variance-in-scala" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2015/05/23/Hello-Hexo/" class="article-date">
-  <time datetime="2015-05-23T07:01:57.000Z" itemprop="datePublished">2015-05-23</time>
+    <a href="/2015/05/23/2014-06-06-variance-in-scala/" class="article-date">
+  <time datetime="2015-05-23T07:18:49.000Z" itemprop="datePublished">2015-05-23</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -75,7 +79,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/23/Hello-Hexo/">Hello Hexo</a>
+      <a class="article-title" href="/2015/05/23/2014-06-06-variance-in-scala/">Variance in Scala</a>
     </h1>
   
 
@@ -83,13 +87,671 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
+<p>Scala supports two forms of polymorphism: <em>sub-typing</em> and <em>generics</em>. Not only does the type system needs to deal with both of them independently, it also needs to correctly resolve their interactions. </p>
+<h2 id="Type_Bounds">Type Bounds</h2><p>In order to express the sub-typing relationship between type parameters, we need to introduce the concept of <em>type bounds</em>:</p>
+<ul>
+<li>Upper bound: S &lt;: T means S is a <em>sub-type</em> of T,</li>
+<li>Lower bound: S &gt;: T means S is a <em>super-type</em> of T, and </li>
+<li>Mixed bound: S &gt;: T1 &lt;: T2 means S is any type between T1 and T2.</li>
+</ul>
+<h2 id="Variance">Variance</h2><p>Both functions and classes can be parameterized by type parameters, and <em>Variance</em> refers how the sub-typing relationship between them relates to the sub-typing relationship between their type parameters. </p>
+<p>Say <code>C[T]</code> is a parametric type and <code>A &lt;: B</code>, there are three possible relationships between <code>C[A]</code> and <code>C[B]</code>:</p>
+<ul>
+<li>C is <em>covariant</em> if <code>C[A] &lt;: C[B]</code>,</li>
+<li>C is <em>contravariant</em> if <code>C[A] &gt;: C[B]</code>, and</li>
+<li>C is <em>nonvariant</em> otherwise.</li>
+</ul>
+<p>There is a syntax in Scala to declare the variance of a type by annotating the type parameter:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[</span>+<span class="type">A</span>] &#123; ... &#125; <span class="comment">// C is covariant</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[</span>-<span class="type">A</span>] &#123; ... &#125; <span class="comment">// C is contravariant</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[</span><span class="type">A</span>]  &#123; ... &#125; <span class="comment">// C is nonvariant</span></span><br></pre></td></tr></table></figure>
+<h2 id="Functions">Functions</h2><p>Assume <code>IntSet</code> is the base class for <code>Empty</code> and <code>NonEmpty</code>, i.e. <code>IntSet &gt;: NonEmpty</code> and <code>IntSet &gt;: Empty</code>. Consider two function types <code>type F1 = IntSet =&gt; NonEmpty</code> and <code>type F2 = NonEmpty =&gt; IntSet</code>, what’s the sub-typing relationship between <code>F1</code> and <code>F2</code>?</p>
+<p>Let’s try to explain it intuitively using <em>the Liskov Substitution Principle</em>:</p>
+<blockquote>
+<p>If <code>A :&lt; B</code>, then everything one can do with a value of type <code>B</code>, one should also be able to do with a value of type <code>A</code>.</p>
+</blockquote>
+<p>For functions, it means that it is safe to replace a function with the type <code>F_super</code> with another one with the type <code>F_sub</code>. The function arguments of <code>F_super</code> should also be accepted by <code>F_sub</code>, which means <code>F_sub</code> should accept a more general type of arguments. For any expression that takes the result of <code>F_super</code> as an parameter, it should also accept the result of <code>F_sub</code>, which means <code>F_sub</code> should return a more specific type of result. Therefore, we have <code>F1 &lt;: F2</code>. </p>
+<blockquote>
+<p>Functions are contravariant in their argument type(s) and covariant in their result type.</p>
+</blockquote>
+<p>In general, If <code>A1 &gt;: A2</code> and <code>B1 &lt;: B2</code> then <code>A1 =&gt; B1 &lt;: A2 =&gt; B2</code>. The same goes for the functions that take functions as arguments. For example, <code>(A2 =&gt; B2) =&gt; B1 &lt;: (A1 =&gt; B1) =&gt; B2</code> if <code>A1 &gt;: A2</code> and <code>B1 &lt;: B2</code>. And there is a nice trick to determine the variance of a type: <em>a position is covariant if it is on the left side of an even number of arrows</em>. </p>
+<h2 id="Classes">Classes</h2><p>We know that functions are objects with <code>apply</code> method in Scala. The function type <code>T =&gt; U</code> is defined in term of the <code>Function1</code> trait as:</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> scala</span><br><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Function1</span>[</span>-<span class="type">T</span>, +<span class="type">U</span>] &#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">apply</span>(</span>x: <span class="type">T</span>): <span class="type">U</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The Scala compiler will check the variance of a class with similar rules as the variance rule of function types:</p>
+<ul>
+<li><em>Covariant</em> type parameters can only appear in method results.</li>
+<li><em>Contravariant</em> type params can only appear in method args.</li>
+<li><em>Invariant</em> type params can appear everywhere</li>
+</ul>
+<h2 id="Making_a_Class_Covariant">Making a Class Covariant</h2><blockquote>
+<p>Roughly speaking, a type that accepts mutations of its elements should not be covariant.</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NonEmpty[] a = <span class="keyword">new</span> NonEmpty[]&#123;<span class="keyword">new</span> NonEmpty(<span class="number">1</span>, Empty, Empty)&#125;;</span><br><span class="line">IntSet [] b = a;</span><br><span class="line">b[<span class="number">0</span>] = Empty;        <span class="comment">// throw an exception</span></span><br><span class="line">NonEmpty s = a[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>In Java, Arrays are covariant, which means <code>NonEmpty[] &lt;: IntSet[]</code>. Therefore, it is possible assign a ref of the subtype to a ref of the super-type, which is clearly problematic (see <code>IntSet [] b = a;</code>). Line 3 would throw an exception, which has runtime cost. </p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">a</span>:</span> <span class="type">Array</span>[<span class="type">NonEmpty</span>] = <span class="type">Array</span>(<span class="keyword">new</span> <span class="type">NonEmpty</span>(<span class="number">1</span>, <span class="type">Empty</span>, <span class="type">Empty</span>))</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">b</span>:</span> <span class="type">Array</span>[<span class="type">IntSet</span>] = a</span><br><span class="line">b(<span class="number">0</span>) = <span class="type">Empty</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">s</span>:</span> <span class="type">NonEmpty</span> = a(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.</p>
+<blockquote>
+<p>But immutable types can be covariant, if some conditions on methods are met. </p>
+<ul>
+<li>Covariant type params may appear in lower bounds of method type params</li>
+<li>Contravariant type params may appear in upper bounds of method</li>
+</ul>
+</blockquote>
+<p>Example:</p>
+<script src="https://gist.github.com/Zionyun/2a2181db8898c496ec56.js"></script>
+
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a></li>
+<li><a href="http://zh.wikipedia.org/wiki/%E5%8D%8F%E5%8F%98%E4%B8%8E%E9%80%86%E5%8F%98" target="_blank" rel="external">Wikipedia</a></li>
+</ul>
+<h2 id="History">History</h2><ul>
+<li>Jun 6, 2014 04:00:56 First commit</li>
+</ul>
+
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/23/Hello-Hexo/" data-id="cia0out570000wstamb5regqd" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/23/2014-06-06-variance-in-scala/" data-id="cia0pcpcu0009drta307ilt4h" class="article-share-link">Share</a>
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/en/">en</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pl/">pl</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-09-14-xna-vs2012" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2013-09-14-xna-vs2012/" class="article-date">
+  <time datetime="2015-05-23T07:18:05.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2013-09-14-xna-vs2012/">如何在VS2012中创建XNA项目</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
+<ul>
+<li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了</li>
+<li>安装最新的<a href="http://www.xbox.com/en-US/LIVE/PC/DownloadClient" target="_blank" rel="external">Windows Marketplace Client</a></li>
+<li>安装XNA Game Studio 4.0</li>
+<li>将XNA的扩展文件夹从VS2010的路径拷贝到VS2012，如</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcopy /e "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 10.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0" "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0"</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打开扩展文件夹里的<code>extension.vsixmanifest</code>，将里面的<code>Version</code>改成<code>11</code></li>
+<li>刷新一下VS</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\devenv</span>.exe" /setup</span><br></pre></td></tr></table></figure>
+<ul>
+<li>到<code>%LocalAppData%\Microsoft\VisualStudio\11.0\Extensions</code>目录下，把<code>extensionSdks.en-US.cache</code>和<code>extensions.en-US.cache</code>这样的缓存文件删除，不然新建项目时XNA扩展会无法加载。</li>
+</ul>
+<p>这里有个小trick，当VS挂掉而你想知道为什么时，使用下面的命令启动VS</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"</span> /log</span><br></pre></td></tr></table></figure>
+<p>这样的话VS就会生成debug log到<code>%AppData%\Microsoft\VisualStudio\11.0\ActivityLog.xml</code>了。</p>
+<p>EOF</p>
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012" target="_blank" rel="external">How to install XNA game studio on Visual Studio 2012?</a></li>
+<li><a href="http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8" target="_blank" rel="external">How to install the XNA Game Studio 4.0 in Windows 8?</a></li>
+<li><a href="http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx" target="_blank" rel="external">How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2013-09-14-xna-vs2012/" data-id="cia0p9nwf0000c8tajyrt8n9j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gamedev/">gamedev</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xna/">xna</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-05-28-the-last-thing-d-needs" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2014-05-28-the-last-thing-d-needs/" class="article-date">
+  <time datetime="2015-05-23T07:17:05.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2014-05-28-the-last-thing-d-needs/">The Last Thing D Needs</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>“I am not here to bash C++” — Scott Meyers, 2014</p>
+<p>今年DConf把Scott Meyers (Effetive C++系列的作者) 请过来做<a href="http://www.ustream.tv/recorded/47947981" target="_blank" rel="external">演讲</a>。打开前我还疑惑地以为Meyers难道开始D语言的传道了，可是一开始看到他一脸假正经地宣称自己不是过来羞辱C++的，我就明白这是又一出挂羊头卖狗肉的C++鞭笞秀了XDDDD。抱着娱乐的心情看完，却发现感想远超预期。也许是因为场合不同，这次Meyers的演讲完全跳出了他之前”Meyers knows all”的老调，而是通过自己对C++的理解进行了相当有趣的吐槽，而且中间插的段子也是笑点十足。强烈推荐给关注近期C++发展的程序员。</p>
+<p>下面是对这次演讲的一些笔记。</p>
+<p>———</p>
+<h2 id="C++_的坑">C++ 的坑</h2><p>C++鞭笞秀的标准起手式就是陈列语言大坑，这次也不例外。</p>
+<h3 id="初始化_Initialization">初始化 Initialization</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> x1;                <span class="comment">// unknown</span></span><br><span class="line"><span class="keyword">int</span> x2;                <span class="comment">// (at global scope) 0</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> x3;         <span class="comment">// 0</span></span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">int</span> x4;            <span class="comment">// unknown</span></span><br><span class="line">	…</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> a1[<span class="number">100</span>];           <span class="comment">// unknown</span></span><br><span class="line"><span class="keyword">int</span> a2[<span class="number">100</span>];           <span class="comment">// (at global scope) 0</span></span><br></pre></td></tr></table></figure>
+<p>变量的初始化是个很基础的话题。会得到上面的结果的原因也简单：未被初始化的全局变量和静态变量都会被放去BSS段(BSS segment)，而BSS段的数据都是0初始化的。背后的道理也很单纯：为这些变量的初始化并不会带来运行时的代价(runtime cost)。C++标准(准确地说，C标准)的原则是，只要不损害运行时的性能，编译器都很愿意为程序员提供方便。然后这样就带来了变量初始化行为不一致的问题。尽管现在所有的代码规范都强烈抵制全局变量和静态变量，并且一再强调定义变量时初始化，但是只要是人都会有失误的时候。而标准作出了取舍：它以程序员发生错误的可能性作为代价，换取了更好的运行性能。背后的经济学原理就是机器的时间要比程序员的时间更值钱。</p>
+<p>这样的取舍也有一定的道理，而如果打之为止的话，这原则也很好地解释了一致性。可是我们C++有容器，而容器是默认初始化为0的，即使这带来了运行时的代价……</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; a(<span class="number">100</span>);  <span class="comment">// 0</span></span><br></pre></td></tr></table></figure>
+<h3 id="类型推导_Type_Deduction">类型推导 Type Deduction</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> cx = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> my_cx1 = cx;                 <span class="comment">// int</span></span><br><span class="line"><span class="keyword">decltype</span>(cx) my_cx2 = cx;         <span class="comment">// const int</span></span><br></pre></td></tr></table></figure>
+<p>在这里可以解释为，<code>my_cx1</code>是另外一个独立的变量，它使用了<code>cx</code>作为初始值，并不代表它应该有完全一样的类型。使用<code>decltype</code>，就代表你想完全照用<code>cx</code>的类型。这两条是不同的规则，而符合逻辑，没有问题。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(T param)</span></span>;</span><br><span class="line"></span><br><span class="line">f1(cx);                           <span class="comment">// T: int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">(T&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line">f2(cx);                           <span class="comment">// T: const int</span></span><br></pre></td></tr></table></figure>
+<p>这里<code>f1</code>的逻辑和<code>auto</code>类似。<code>T</code>在函数里是一个独立的新变量，因此我们只需要把<code>cx</code>的数据复制到<code>T</code>，然而不需要要求<code>T</code>也带有常量性(constness)。而<code>f2</code>中，我们引用了某块内存里的某个变量，因此<code>T</code>必须保留它原来的常量性，这也很符合逻辑</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f3</span><span class="params">(T&amp;&amp; param)</span></span>;</span><br><span class="line"></span><br><span class="line">f3(cx);                           <span class="comment">// T: const int &amp;</span></span><br></pre></td></tr></table></figure>
+<p>注意<code>T&amp;&amp;</code>在C++ 11前的是非法的：你不能为一个引用再生成一个引用 (you are not allowed to take a reference to a reference)。</p>
+<p>然而C++ 11引入了新的<em>reference collapsing rules</em></p>
+<ul>
+<li><code>A&amp; &amp; -&gt; A&amp;</code></li>
+<li><code>A&amp; &amp;&amp; -&gt; A&amp;</code></li>
+<li><code>A&amp;&amp; &amp; -&gt; A&amp;</code></li>
+<li><code>A&amp;&amp; &amp;&amp; -&gt; A&amp;&amp;</code></li>
+</ul>
+<p>根据模版参数推导规则，<code>cx</code>是类型为<code>A</code>的左值(lvalue)，因此<code>T</code>会根据上面的reference collapsing rules得到<code>A&amp;</code>的类型。这是为了实现<em>perfect forwarding</em>的一个hack，具体细节可以参考<a href="http://thbecker.net/articles/rvalue_references/section_08.html" target="_blank" rel="external">Perfect Forwarding: The Solution</a>。(Meyers: still not here to bash XD!)</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> lam = [cx] &#123; cx = <span class="number">10</span>; &#125;    <span class="comment">// error!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> cx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当考虑到lambda时，事情就变得更有乐趣了。当我们用<code>capture</code>时，编译器实际上会被背后自动生成一个类，并把<code>cx</code>从原来的scope里复制到这个类的同名数据成员中。尽管我们逻辑上觉得，这样的capture不过也是简单的复制数据，所以类里的数据成员<code>cx</code>的类型应该还是<code>int</code>。但是实际上数据成员的类型是<code>const int</code>，所以上面的例子是不是编译的……这也是C++唯一的地方(据Meyers宣称)，当你尝试把一个变量的内容复制到一个新的独立变量时，会保存原变量的常量性的。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> lam = [cx = cx] &#123; cx = <span class="number">10</span>; &#125;    <span class="comment">// error!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> cx;    <span class="comment">// but acts like const int</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span> <span class="keyword">const</span></span><br><span class="line">    </span>&#123; cx = <span class="number">0</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而C++ 14新加入的<em>lambda captures expressions</em>使我们可以用<code>cx</code>初始化一个lambda内的<code>cx</code>变量。而生成类里的<code>cx</code>数据成员也会变成<code>int</code>。但是很遗憾，即使是这样，你也不能为lambda内的<code>cx</code>进行赋值。因为这个类还会自动生成一个<code>()</code>操作符函数，而这个函数是<code>const</code>的，所以你不能对数据变量<code>cx</code>进行改变……怎么解决这个问题？很简单，你只需要如下：(Meyers: still not here to bash XDDDD!!!!!)</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> lam2 = [cx = cx]() <span class="keyword">mutable</span> &#123; cx = <span class="number">10</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> cx;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span></span><br><span class="line">    </span>&#123; cx = <span class="number">0</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总结上面，对于<code>const int cx = 0</code>来说，根据上下文总共只有6种类型推导的方式:</p>
+<ul>
+<li><code>auto</code> &amp; <code>lambda int capture</code> = <code>int</code></li>
+<li><code>decltype</code> = <code>const int</code></li>
+<li><code>template(T param)</code> = <code>int</code></li>
+<li><code>template(T&amp; param)<code>=</code>const int</code></li>
+<li><code>template(T&amp;&amp; param)<code>=</code>const int &amp;</code></li>
+<li><code>lambda (by-value capture)</code> = <code>const int</code></li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x1 = <span class="number">0</span>;            <span class="comment">// int</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">x2</span><span class="params">(0)</span></span>;             <span class="comment">// int</span></span><br><span class="line"><span class="keyword">auto</span> x3 = &#123; <span class="number">0</span> &#125;;        <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"><span class="keyword">auto</span> x4 &#123; <span class="number">0</span> &#125;;          <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T param)</span></span>;</span><br><span class="line"></span><br><span class="line">f(&#123;<span class="number">0</span>&#125;);                 <span class="comment">// error! &#123;0&#125; has no type</span></span><br></pre></td></tr></table></figure>
+<p>最后这个例子说明了<code>auto</code>其实是有自己的一套推导法则的，只是Meyers也没办法解释这背后的逻辑了……</p>
+<h3 id="Inheritance_继承">Inheritance 继承</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doBaseWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Derived: <span class="keyword">public</span> Base&lt;T&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doDerivedWork</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        doBaseWork();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>C++对于模板内符号的<em>two-phase name lookup</em>应该是C++ gotchas里的经典场景了。<br>上面的代码是无法编译的，编译器会要求你显式地注明<code>doBaseWork()</code>依赖于类型参数<code>T</code>。<code>this-&gt;doBaseWork()</code>或者<code>Base::doBaseWork()</code>都能通过编译。但是之后出现了<code>Base</code>对于<code>int</code>类型的特化(specialization)的话，在实体化(instantiating)模版时还是一样会出错。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;&gt;</span><br><span class="line"><span class="keyword">class</span> Base&lt;<span class="keyword">int</span>&gt; &#123;&#125;;</span><br><span class="line"></span><br><span class="line">Derived&lt;<span class="keyword">int</span>&gt; d;</span><br><span class="line">d.doDerivedWork();    <span class="comment">// fail</span></span><br></pre></td></tr></table></figure>
+<p>这个问题另外一个有趣的变体是，如果不幸打错字，將<code>doBaseWork</code>打成<code>doBaseWrk</code>的话，会怎么样。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doBaseWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Derived: <span class="keyword">public</span> Base&lt;T&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doDerivedWork</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        doBaseWrk();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这不是一个容易回答的问题。如果编译器认为这是笔误，第一个phase就诊断这是一个错误的话，之后就不能通过特化来提供<code>doBaseWrk</code>函数了。如果编译器选择推迟name lookup直到实体化，那么我就就把诊断库(library)的责任推给了用户。</p>
+<p>C++的解决方案是：模板的作者拥有选择权：</p>
+<ul>
+<li>只写<code>doBaseWrk()</code>的话，那么编译器在解释（parse）模板时就进行符号查找(lookup name)。</li>
+<li><code>this-&gt;doBaseWrk()</code>或者<code>BasedoBaseWrk()</code>的话，编译器会推迟到实体化模板时才进行符号查找。</li>
+</ul>
+<h3 id="Computational_Complexity_计算复杂度">Computational Complexity 计算复杂度</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> it1 = <span class="built_in">std</span>::binary_search(v.begin(), v.end(), <span class="number">10</span>);  <span class="comment">// O(lg n)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">auto</span> it2 = <span class="built_in">std</span>::binary_search(li.begin(), li.end(), <span class="number">10</span>); <span class="comment">// O(n); standard: O(lg n)</span></span><br></pre></td></tr></table></figure>
+<p>为什么标准中二分查找链表的复杂度是<code>O(lg n)</code>？因为这个复杂度是基于比较的次数的……</p>
+<h3 id="Specifications">Specifications</h3><p>C++标准中规定了，除了满足基本容器的要求外，连续容器(sequence container)还需要满足另外的16项要求。可是看一下STL里面的5种连续容器，它们是否都满足这16项要求呢？</p>
+<ul>
+<li>array: no</li>
+<li>deque: yes</li>
+<li>forward_list: 只满足了1条……</li>
+<li>list: yes</li>
+<li>vector: yes</li>
+</ul>
+<hr>
+<h2 id="总结">总结</h2><p>Fred Brooks提到软件设计中的复杂性可以分为两种:</p>
+<ul>
+<li>Essential complexity</li>
+<li>Accidental complexity</li>
+</ul>
+<p>Meyers认为在编程语言设计中，essential complexity来自设计方向的冲突:</p>
+<ul>
+<li>Simplicity and regular vs. expressiveness.</li>
+<li>Abstraction and portability vs. efficiency.</li>
+<li>New approaches vs. compability with legacy systems.</li>
+<li>Expressiveness vs. ability to issue good diagnostics.</li>
+</ul>
+<p>然而C++本身在设计时带来了很多不必要的accidental complexity，例如在演讲里提到的：</p>
+<ul>
+<li><code>int</code> <em>有时</em>会被初始化为0</li>
+<li>By-value lambda capture <em>有时</em>会保持被捕捉变量的常量性</li>
+<li><code>mutable lambdas</code> 必须声明参数列表，而non-mutable的不用</li>
+<li>花括号初始化(braced initializer) <em>有时</em>会带有类型</li>
+<li>计算复杂度的保证<em>有时</em>很微妙</li>
+<li>容器的API命名不完全一致</li>
+<li><code>sort</code> <em>有时</em>是stable的</li>
+<li>容器的要求在<em>有时</em>是被要求的</li>
+<li>很多很多</li>
+</ul>
+<p>C++主要的问题在于：</p>
+<ul>
+<li>太复杂以致难以被修复</li>
+<li>需要兼容大量陈旧代码</li>
+<li>用户和标准委员会并没有很大的兴趣/精力去修复这些问题</li>
+</ul>
+<p>对于Meyers来说，他不了解D，不设计编程语言，不进行软件开发(很多年)，偶尔干干咨询(很多年前)，经常作为培训的教师，不停地给人解释概念。因此对于他来说，容易解释的东西就是好的 (easy to explain = good)。然而从<em>piecemeal design philosophy</em>来说，C++的符合要求的：每条语言规则单独来说都是容易被解释或者辩解的。然后从<em>holistic design pholosophy</em>的角度，每条语言规则除了能被单独解释外，它在别的规则的上下文里，也应该同样易于解释。</p>
+<p>常见的C++设计的正当化理由有：</p>
+<ol>
+<li>与C兼容</li>
+<li>最大化效率</li>
+<li>不用就不花钱 (you don’t pay for what you don’t use)</li>
+<li>信任用户</li>
+<li>预防可能的用户错误</li>
+<li>让功能更泛用</li>
+<li>不要限制编译器</li>
+<li>相比起编译器开发者，更关注用户</li>
+<li>保持后向兼容性</li>
+<li>与其他功能保持一致</li>
+</ol>
+<p>这些理由单独使用时，都能够让某个语言特性得到正当化。然而4、5、7和8实际上可以为所有语言特性进行辩解，而它们本身就是容易相互冲突的。</p>
+<p>然而作为语言用户，使用C++很容易让用户把大量精力花费在<code>tool use</code>的层面，然而相对花费在<code>tool application</code>的时间就少了很多。Meyers用自己的经验来说，他写了很多那么多本C++系列的书籍，大部分的内容都关注<code>tool use</code>，而真正使用语言特性来实现high-level ideas的<code>tool application</code>实际上很少。因为他认为D语言最不需要的东西，就是他这样的人。</p>
+<p>另外某个听众提问了最新的Effective Modern C++推出时间，Meyers预计会在今年的9月份推出。但是他不认为D会议的听众会需要这本书 XDDDD。</p>
+<hr>
+<h1 id="Reference">Reference</h1><ul>
+<li><a href="http://www.ustream.tv/recorded/47947981" target="_blank" rel="external">Keynote: The Last Thing D Needs - Scott Meyers</a></li>
+<li><a href="https://isocpp.org/blog/2012/11/universal-references-in-c11-scott-meyers" target="_blank" rel="external">Universal References in C++11</a></li>
+<li><a href="http://thbecker.net/articles/rvalue_references/section_01.html" target="_blank" rel="external">C++ Rvalue References Explained</a></li>
+<li><a href="http://eli.thegreenplace.net/2012/02/06/dependent-name-lookup-for-c-templates/" target="_blank" rel="external">Dependent name lookup for C++ templates</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2014-05-28-the-last-thing-d-needs/" data-id="cia0pcpcx000edrta526mpaxc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/c/">c++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-05-09-scala-basics" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2014-05-09-scala-basics/" class="article-date">
+  <time datetime="2015-05-23T07:15:44.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2014-05-09-scala-basics/">Scala基本语法与概念笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供部分的实际参数，而另外一部分参数则使用<code>_</code>来代替，这样会得到另外一个函数。<code>_</code>实际上起到一个匿名通配符 (unnamed wildcard) 的作用。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">adder</span>(</span>m: <span class="type">Int</span>, n: <span class="type">Int</span>) = m + n               <span class="comment">//&gt; adder: (m: Int, n: Int)Int</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">add2</span> =</span> adder(<span class="number">2</span>, _: <span class="type">Int</span>)                     <span class="comment">//&gt; add2  : Int =&gt; Int = &lt;function1&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">add3</span> =</span> adder(_: <span class="type">Int</span>, <span class="number">3</span>)                     <span class="comment">//&gt; add3  : Int =&gt; Int = &lt;function1&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而Currying则是说一个函数能够接受多个函数参数列表。从本质上，这样的函数可以通过使一个函数将另外一个函数作为返回值来实现。以下面为例，最外层的函数<code>sum</code>接受一个函数作为参数，并返回<code>sumInternal</code>作为结果。而在<code>sumInternal</code>的实现是依赖于<code>sum</code>的函数参数的。实际调用<code>sum</code>时的例子为<code>sum((x: Int) =&gt; x * x)(0, 2)</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sum</span>(</span>f: <span class="type">Int</span> =&gt; <span class="type">Int</span>): (<span class="type">Int</span>, <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">sumInternal</span>(</span>a: <span class="type">Int</span>, b: <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</span><br><span class="line">	<span class="keyword">if</span> (a &gt; b) <span class="number">0</span></span><br><span class="line">	<span class="keyword">else</span> f(a) + sumInternal(a + <span class="number">1</span>, b)</span><br><span class="line">  &#125;</span><br><span class="line">  sumInternal</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>按照这个的模式，我们可以用过嵌套定义函数来实现任意多的函数列表，只是略显繁琐。Scala提供了语法糖来简化Currying函数的定义。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">productSum</span>(</span>m: <span class="type">Double</span>, x: <span class="type">Double</span>)(n: <span class="type">Double</span>, y: <span class="type">Double</span>) = (m * x) + (n * y)</span><br></pre></td></tr></table></figure>
+<p>Partial application和Curring也是可以混合使用的。在<code>multiplyTwoSum</code>里我们对<code>productSum</code>两个参数列表都只传入了部分参数，而且得到的结果是<code>(Double, Double) =&gt; Double</code>，即是一个接受两个<code>Double</code>类型参数的函数。注意这和<code>oneMultiplySum</code>的区别：<code>oneMultiplySum</code>接受一个<code>Int</code>类型的参数，并返回一个<code>(Double, Double) =&gt; Double<code>&lt;/code&gt;的函数作为结果。使用Partial application和Curring时，必须仔细观察得到的函数签名。我们也可以对一个partially applied的函数使用</code>curried`方法，得到它的curried版本。</code></p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">multiplyTwoSum</span> =</span> productSum(_: <span class="type">Double</span>, <span class="number">2</span>)(_: <span class="type">Double</span>, <span class="number">2</span>)</span><br><span class="line">                                              <span class="comment">//&gt; multiplyTwoSum  : (Double, Double) =&gt; Double = &lt;function2&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">fourteen</span> =</span> multiplyTwoSum(<span class="number">3</span>, <span class="number">4</span>)             <span class="comment">//&gt; fourteen  : Double = 14.0</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">oneMultiplySum</span> =</span> productSum(<span class="number">1</span>, _: <span class="type">Int</span>) _    <span class="comment">//&gt; oneMultiplySum  : Int =&gt; ((Double, Double) =&gt; Double) = &lt;function1&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">curriedAdder</span> =</span> (adder _).curried            <span class="comment">//&gt; curriedAdder  : Int =&gt; (Int =&gt; Int) = &lt;function1&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">five</span> =</span> curriedAdder(<span class="number">2</span>)(<span class="number">3</span>)                   <span class="comment">//&gt; five  : Int = 5</span></span><br></pre></td></tr></table></figure>
+<h3 id="变长参数_(Variable_length_parameters)">变长参数 (Variable length parameters)</h3><p>Scala支持某个类型的变长参数，只要在函数参数的类型后面加上<code>*</code>就可以了。变长参数的类型是<code>Seq[T]</code>，因此大部分数据结构都能作为实际参数传入这样的函数中。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">capitalizeAll</span>(</span>args: <span class="type">String</span>*) = &#123;</span><br><span class="line">  args.map &#123; arg =&gt; arg.capitalize &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="类_(Classes)">类 (Classes)</h3><p>和Java或者C#不同，Scala里类的构造函数 (constructor) 并不是一个专门的方法 (所以构造函数这个翻译对于Scala的语境来说还挺不合适的，构造器可能更加适合一点？)，而是指类定义里面除去方法定义 (method definitions) 的所有部分。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// classes</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>(</span><span class="function"><span class="keyword">val</span> <span class="title">brand</span>:</span> <span class="type">String</span>) &#123;</span><br><span class="line"><span class="comment">//define method with def</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span>(</span>m: <span class="type">Double</span>, n: <span class="type">Double</span>) = m + n</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getBrand</span> =</span> brand</span><br><span class="line"><span class="comment">// define fields with val (or var)</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">color</span>:</span> <span class="type">String</span> =</span><br><span class="line">  <span class="keyword">if</span> (brand == <span class="string">"HP"</span>) &#123;</span><br><span class="line">    <span class="string">"black"</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="string">"white"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">hpCalculator</span> =</span> <span class="keyword">new</span> <span class="type">Calculator</span>(<span class="string">"HP"</span>)         <span class="comment">//&gt; hpCalculator  : basics.Calculator = basics$$anonfun$main$1$Calculator$1@664</span></span><br></pre></td></tr></table></figure>
+<p>抽象类，继承和重载都很正常。对于抽象类里只声明但是没有实现的定义，在实现时直接定义就可以。如果在抽象类里已经实现了的定义，那在子类里重新实现时要求使用<code>override</code>关键字。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// classes</span></span><br><span class="line"><span class="comment">// Inheritance</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ScientificCalculator</span>(</span>brand: <span class="type">String</span>) <span class="keyword">extends</span> <span class="type">Calculator</span>(brand) &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">log</span>(</span>m: <span class="type">Double</span>, base: <span class="type">Double</span>) = math.log(m) / math.log(base)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// overloading methods</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdvancedScientificCalculator</span>(</span>brand: <span class="type">String</span>) <span class="keyword">extends</span> <span class="type">ScientificCalculator</span>(brand) &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">log</span>(</span>m: <span class="type">Int</span>): <span class="type">Double</span> = log(m, math.exp(<span class="number">1</span>))</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">val</span> <span class="title">color</span>:</span> <span class="type">String</span> = <span class="string">"Golden"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// abstract classes; no implementation; can't create instances from abstract class</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">getArea</span>(</span>): <span class="type">Int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Traits">Traits</h3><p>Traits定义了一系列的数据和方法，并且可以用来扩展或者mixin在你的类定义中。Traits和抽象类的特点和使用范围都有很相似的地方，所以选择的时候需要考虑它们不同的特点。一个类能够扩展多个traits，但是只能扩展一个父类。而traits并不能接受构造参数，而抽象类可以。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Car</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">val</span> <span class="title">brand</span>:</span> <span class="type">String</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Sport</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">val</span> <span class="title">Engine</span>:</span> <span class="type">String</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BMW</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Car</span> <span class="keyword"><span class="keyword">with</span></span> <span class="title">Sport</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">val</span> <span class="title">brand</span> =</span> <span class="string">"BWM"</span></span><br><span class="line">  <span class="function"><span class="keyword">val</span> <span class="title">Engine</span> =</span> <span class="string">"Turbo"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="类型参数">类型参数</h3><p>定义类，函数，和traits时，都可以通过方括号<code>[]</code>引入类型参数。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Cache</span>[</span><span class="type">K</span>, <span class="type">V</span>] &#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">get</span>(</span>key: <span class="type">K</span>): <span class="type">V</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">put</span>(</span>key: <span class="type">K</span>, value: <span class="type">V</span>)</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">delete</span>(</span>key: <span class="type">K</span>)</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">remove</span>[</span><span class="type">K</span>](key: <span class="type">K</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="apply_方法">apply 方法</h3><p>Scala可以让你为类或者对象定义<code>apply</code>方法，来重载<code>()</code>运算符。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> &#123;</span>&#125;</span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">FooMaker</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span>(</span>) = <span class="keyword">new</span> <span class="type">Foo</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">newFoo</span> =</span> <span class="type">FooMaker</span>()</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bar</span> &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span>(</span>) = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">bar</span> =</span> <span class="keyword">new</span> <span class="type">Bar</span></span><br><span class="line">bar()                                           <span class="comment">//&gt; res0: Int = 0</span></span><br></pre></td></tr></table></figure>
+<p>Scala里面类和对象能够使用同一个名称。所以通常我们会为一个类定义一个同名的对象 (companion object)，作为该类型的factories。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DummyClass</span>(</span><span class="function"><span class="keyword">val</span> <span class="title">foo</span>:</span> <span class="type">String</span>) &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">DummyClass</span> &#123;</span> <span class="comment">// Classes and Objects can have the same name.</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span>(</span>foo: <span class="type">String</span>) = <span class="keyword">new</span> <span class="type">DummyClass</span>(foo)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">c</span> =</span> <span class="type">DummyClass</span>(<span class="string">"foo"</span>)                                          <span class="comment">//&gt; res0: Int = 0</span></span><br></pre></td></tr></table></figure>
+<h3 id="函数即对象">函数即对象</h3><p>Scala里面的函数其实是一系列traits的集合。以一个<code>Int =&gt; Int</code>类型的函数为例，它扩展了<code>Function1[Int, Int]</code>这个trait。而且这个trait定义了<code>apply</code>函数，因为你可以用调用函数的语法来使用这个对象。实际上，Scala的提供了语法糖，让用户可以用<code>Int =&gt; Int</code>来表示<code>Function1[Int, Int]</code>。</p>
+<p>注意这里的函数并不包括类里面定义的方法。</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">addOne</span> <span class="keyword"><span class="keyword">extends</span></span> <span class="title">Function1</span>[</span><span class="type">Int</span>, <span class="type">Int</span>] &#123;  <span class="comment">// can be class AddOne extends (Int =&gt; Int)</span></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span>(</span>m: <span class="type">Int</span>): <span class="type">Int</span> = m + <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>EOF</p>
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="http://twitter.github.io/scala_school/" target="_blank" rel="external">Twitter Scala School</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2014-05-09-scala-basics/" data-id="cia0p9zzj0000cmta23e7wl3n" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/scala/">scala</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2015-01-24-on-oil" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2015-01-24-on-oil/" class="article-date">
+  <time datetime="2015-05-23T07:09:44.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/economics/">economics</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2015-01-24-on-oil/">最近油价变动的一些笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便宜了。</p>
+<p>事实上，这半年里油价已经暴跌了超过50%了。去年6月时，每桶的油价还一度停留在$100的位置，而今天的每桶油价已经到达$45了(<a href="http://www.nasdaq.com/markets/crude-oil.aspx?timeframe=1y" target="_blank" rel="external">source</a>)。这次暴跌的原因不外乎是供求关系：萧条的国际经济所消耗的石油比市场预期的低，而同时OPEC出产了高于市场预期的石油。而美国疯狂的页岩气开采更是为本来供求不衡的局面火上加油：自从2010年来，美国可能新建了将近20000个新的页岩气井(<a href="http://www.economist.com/news/leaders/21635472-economics-oil-have-changed-some-businesses-will-go-bust-market-will-be" target="_blank" rel="external">source</a>)。通过页岩气，美国已经提升了1/3的油产量。</p>
+<p>油价的下跌总体来说对消费者是有益的，尤其是对于原油进口国。下跌的油价会进一步减少通货膨胀，同时也有可能让中央银行采取更宽松的货币政策。然而对于石油出产国，例如俄罗斯和加拿大，这次大规模的石油价格下跌对它们的经济造成了很大影响。而加拿大的石油资源是油砂，其开采成本本来就偏高；当油价一下挫，开采计划在经济上就不可行。几天前，加拿大银行进一步调低了本来已经很低的利率，而加元的汇率经一步下挫，春季的物价上涨已是无法避免。</p>
+<p>OPEC，尤其是里面领头的沙特阿拉伯，完全有可能通过减产来提高原油价格。事实上，OPEC上的几个成员已经提出希望减产来把石油价格推回更好的位置。可是沙特阿拉伯并不希望降低产量而流失市场份额，而相反他们希望采取压低石油价格的方式来赢得和页岩气的竞争。毕竟沙特的石油开采成本非常低（每桶只需要$5-$6），他们完全有资本进行产量和价格竞争。而因为页岩气的生命周期很短，页岩气开发者必须获得持续的资本投入来开发新油井来维持产量。不少页岩气开发者是带着债务开始工程的。随着油价的暴跌，不少公司背负着破产的风险。根据估计，美国的页岩气工程必须在$60-70才能维持收支平衡。现在的价格很有可能迫使资本撤离页岩气工程，而后的结果很有可能是页岩气减产和石油价格上调。</p>
+<p>从长远来看，页岩气还是充满前景的。尽管页岩气井的产量无法持久，经过一年的开采后产量一般会下降60-70%；可是相应的，页岩气井的开法花销相对较低，每个新井只需要100万美元，时间最少只需要一周。相比起来，现有的新石油来源都价格昂贵，例如说开采深海的时候资源必须投资大量的资本和时间。</p>
+<h2 id="Reference">Reference</h2><ol>
+<li><a href="http://www.economist.com/news/leaders/21635472-economics-oil-have-changed-some-businesses-will-go-bust-market-will-be" target="_blank" rel="external">Sheikhs v shale</a></li>
+<li><a href="http://www.economist.com/news/finance-and-economics/21635505-will-falling-oil-prices-curb-americas-shale-boom-bind" target="_blank" rel="external">Shale oil: In a bind</a></li>
+<li><a href="https://www.google.com/url?q=http://www.economist.com/news/finance-and-economics/21635510-what-oil-cartel-up-making-best-low-price" target="_blank" rel="external">OPEC: Making the best of a low price</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2015-01-24-on-oil/" data-id="cia0pcpcr0005drta37zge7e1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/energy/">energy</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2014-05-17-nvm" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2014-05-17-nvm/" class="article-date">
+  <time datetime="2015-05-23T07:09:11.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2014-05-17-nvm/">使用NVM管理Node.js</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
+</code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code><span class="tag">nvm</span> <span class="tag">install</span> 0<span class="class">.10</span><span class="class">.28</span>
+<span class="tag">nvm</span> <span class="tag">use</span> 0<span class="class">.10</span><span class="class">.28</span>
+<span class="tag">nvm</span> <span class="tag">alias</span> <span class="tag">default</span> 0<span class="class">.10</span><span class="class">.28</span>
+</code></pre><h2 id="使所有用户共用同一个Node-js版本">使所有用户共用同一个Node.js版本</h2><pre><code>n=$(<span class="built_in">which</span> node);
+n=<span class="variable">${n%/bin/node}</span>;
+chmod -R <span class="number">755</span> <span class="variable">$n</span>/bin/*;
+sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="built_in">local</span>
+</code></pre><p>NVM默认把Node.js安装到用户的Home目录下。为了使所有用户都能使用同一份Node.js的，上述命令会把当前激活的Node.js复制到<code>/usr/local/bin</code>目录下,并把权限设置成所有用户都能访问。如果你之后激活了另外一个版本(<code>nvm use vXX.XX.XX</code>)并向让它成为全局的Node.js版本，那只需要重新执行一遍上面的命令。</p>
+<p>EOF</p>
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="https://www.digitalocean.com/community/articles/how-to-install-node-js-with-nvm-node-version-manager-on-a-vps" target="_blank" rel="external">How To Install Node.js with NVM (Node Version Manager) on a VPS</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2014-05-17-nvm/" data-id="cia0pcpc80000drtaq9cf0gr0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/webdev/">webdev</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2013-11-30-dangan-ronpa" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2013-11-30-dangan-ronpa/" class="article-date">
+  <time datetime="2015-05-23T07:08:38.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/review/">review</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2013-11-30-dangan-ronpa/">超高校级的荒诞与超高校级的快感</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
+<p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形式是真正的亮点：时间限制造成本能的紧张，配合足够的音乐/视觉冲击，便使简单的射击/节奏gameplay带来强烈的沉浸感。速度感，这也是之前的AVG所忽略的地方。以前在进行文字类解密AVG游戏时也或多或少有这样的感觉：虽然我很想看完后面的剧情展开，但是游戏的节奏感实在太慢了！毕竟传统AVG是以故事性剧情展开为主，动作性并非主要要素，而弹丸论破证明了在推理过程中加入动作性的要素，也许并不是坏事。</p>
+<p>相对于游戏形式的新意，故事性的剧情展开倒是比较苍白…因为论战的展开基本上是一直线，游戏里提供了很多线索所以推理很简单，毕竟过多限制下说得通的真相不会很多，再仔细思考一下游戏里的暗示就能找到它期望引导到的方向。可是游戏时过多的提示/限制就让我怀疑玩家行动是否能对故事造成影响，最后不出意料是单线结局，也就是说在(非)日常篇下的行动只是为了获得降低难度的技能和角色的情报而已。(非)日常篇充当的只是让人物形象更加丰满的作用，毕竟这是了解退场过早的角色的唯一方法了，可是当时我可是苦心积累地搜索了校园的每个角落，用SL看过了各种人物的故事的，至少对于我来说，我期望人际关系的变化能够对故事的展开造成更多的影响。</p>
+<p>当然这样的要求也许过于苛刻了……相比较传统AVG来看，弹丸论破无疑是部反传统的作品：强调推理过程的动作性+苍白的剧情变化；我也明白再多的剧情变化也是不能满足玩家的好奇心的。然而，经历了30小时高度紧张和高度沉浸的一周目后，你是不是还想进行基本是一模一样的二周末呢？</p>
+<p>至少对于追求新鲜感的我，答案不言而喻。</p>
+<p><img src="http://i.imgur.com/A1GLQbJ.jpg" alt=""></p>
+<p>EOF</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2013-11-30-dangan-ronpa/" data-id="cia0p9u240000cftac6xozkqc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/game/">game</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2012-12-31-latency-numbers" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2012-12-31-latency-numbers/" class="article-date">
+  <time datetime="2015-05-23T07:08:02.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2012-12-31-latency-numbers/">Latency Numbers Every Programmer Should Know</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,<br>一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
+<p>虽然说是调查, 但如果有人细心观察过<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">页面</a>源代码的话, 其实就能发现作者已经在注释里做了很详细的引用说明了, 所以这篇大抵只是对注释的整理罢了XDDD</p>
+<hr>
+<p>总的来说, 作者用到的数据大部分来自Peter Norvig的<a href="http://norvig.com/21-days.html#answers" target="_blank" rel="external">Teach Yourself Programming in Ten Years</a>和Jeff Dean的<a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en//people/jeff/Stanford-DL-Nov-2010.pdf" target="_blank" rel="external">Building Software Systems at Google and Lessons Learned</a>, 也算是rule of thumb了.同时, 描述硬件的进步趋势时, 大家都爱用”X年翻一倍”这种描述, 所以计算时也是用了简单的指数函数$latex y = a * b ^ x$.</p>
+<hr>
+<p>首先是CPU主频的变化: 在2005之前, CPU的主频每两年就会翻倍(<a href="www.cs.berkeley.edu/~pattrsn/talks/sigmod98-keynote.ppt">来源</a>, 38页; 其实摩尔定律更流行的说法是”每一美元所能买到的电脑性能，将每隔18个月翻两倍以上”, 这也是slides里面用的时间单位, 不过摩尔本人否认自己有这样说过, 而他的论文上确实写的是每两年一翻); 但是到了2005年, CPU的主频就停止在了3GHz(<a href="http://www.kmeme.com/2010/09/clock-speed-wall.html" target="_blank" rel="external">来源</a>).</p>
+<p>既然主频已经无法再提高了, 芯片设计师开始把注意力放在了别的方面. 这里也涉及到摩尔定律好玩的地方. 摩尔定律的原话其实是: “半导体芯片上集成的晶体管和电阻数量将每两年增加一倍”. 因为CPU主频已经达到极限了,所以芯片设计师就开始利用剩下来的”晶体管预算”来改进CPU的其他方面, 例如往CPU塞更多的核.而其实2005年也是第一个桌面双核CPU出现的年份: <a href="http://en.wikipedia.org/wiki/Athlon_64_X2" target="_blank" rel="external">Athlon 64 X2</a>.</p>
+<hr>
+<p>当知道CPU的主频后, 就可以大致估算cache上的延迟时间了. 作者选用了PowerPC™ MPC7451来进行估算(<a href="http://cache.freescale.com/files/32bit/doc/app_note/AN2180.pdf" target="_blank" rel="external">来源</a>):</p>
+<ul>
+<li>L1访问大概需要3个时钟周期</li>
+<li>分支预测错误的话会用掉10个时钟周期</li>
+<li>L2访问需要13个时钟周期</li>
+<li>Mutex锁/解锁需要50个时钟周期</li>
+</ul>
+<hr>
+<p>相比起CPU的进步速度, 总线等待时间上的改善进度一直都算是很糟糕(<a href="http://download.micron.com/pdf/presentations/events/winhec_klein.pdf" target="_blank" rel="external">来源</a>)…15年前(1998年)的数据是: 内存等待时间以每年7%的速度下降, 内存带宽以20%的速度增长(<a href="www.cs.berkeley.edu/~pattrsn/talks/sigmod98-keynote.ppt">来源</a>).</p>
+<p>作者将内存访问的延迟时间从2000年后就定在了100ns. 虽然作者没有明确说明, 不过100ns这个数字最早应该是来自Peter Norvig的<a href="http://norvig.com/21-days.html#answers" target="_blank" rel="external">Teach Yourself Programming in Ten Years</a>, 而之后也被Jeff Dean沿用下来了, 如<a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en//people/jeff/Stanford-DL-Nov-2010.pdf" target="_blank" rel="external">Building Software Systems at Google and Lessons Learned</a>, 所以这个数字就当做rule of thumb好了.</p>
+<hr>
+<p>周边的带宽增长趋势的数据大部分来自<a href="http://ampcamp.berkeley.edu/wp-content/uploads/2012/06/Ion-stoica-amp-camp-21012-warehouse-scale-computing-intro-final.pdf" target="_blank" rel="external">Warehouse-Scale Computing and the BDAS Stack</a>.</p>
+<ul>
+<li>网卡(Network Interface Controller, NIC)带宽是每两年翻一倍, 作者认为在2003年是网卡带宽达到了1Gb/s</li>
+<li>DRAM带宽每三年翻一倍, 在2001年从内存读1MB需要用250,000 ns</li>
+<li>SSD带宽每三年翻一倍, 在2012年时达到3GB/s</li>
+<li>硬盘的带宽增长速度颇为杯具…在2002年时大概每两年翻一倍, 之后需要五年才翻一倍; 在2002年时带宽约为100MB/s</li>
+</ul>
+<hr>
+<p>剩下的部分:</p>
+<ul>
+<li>关于硬盘, 寻找+旋转的等待时间每十年减少一半<a href="http://www.storagenewsletter.com/news/disk/hdd-technology-trends-ibm" target="_blank" rel="external">来源</a>, 在2000年时这数字大约是10ms</li>
+<li>至于SDD, 在2012年之前, 三个翻倍周期(doubling cycle, 即18个月)可以使访问等待时间降低20倍(<a href="http://cseweb.ucsd.edu/users/swanson/papers/FAST2012BleakFlash.pdf" target="_blank" rel="external">来源</a>), 而在2012年是该数字是20us. 而之后的进步空间看似也不大了</li>
+<li>数据中心的RTT(Round-Trip Time)估计是500000ns, 估计也不会有太大改变了</li>
+<li>根据<a href="http://research.google.com/pubs/pub35590.html" target="_blank" rel="external">Moving Beyond End-to-End Path Information to Optimize CDN Performance</a>, 路由似乎还有提升的空间. Wan RTT现在估计是150000000ns.</li>
+</ul>
+<h2 id="Reference">Reference</h2><hr>
+<ul>
+<li><a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a> 原帖</li>
+<li><a href="http://norvig.com/21-days.html#answers" target="_blank" rel="external">Teach Yourself Programming in Ten Years</a> 大部分数据都出自这里</li>
+<li><a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en//people/jeff/Stanford-DL-Nov-2010.pdf" target="_blank" rel="external">Building Software Systems at Google and Lessons Learned</a></li>
+<li><a href="http://www.eecs.berkeley.edu/~rcs/research/hw_trends.xlsx" target="_blank" rel="external">Aurojit Panda’s spreadsheet</a> 更精确的性能翻倍速度的数据</li>
+<li><a href="https://gist.github.com/raw/2841832/0a6e14cda5d6cc8b2eb304a895b0f2ba9b9b75c8/latency.txt" target="_blank" rel="external">Latency Comparison Numbers</a> 说了那么多废话, 都没有这张cheatsheet有用..=_=</li>
+</ul>
+<h2 id="History">History</h2><hr>
+<ul>
+<li>12:17 AM Sunday, December 31, 2012 First commit</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2012-12-31-latency-numbers/" data-id="cia0p9hyj0000c1taqr4us0x1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/system/">system</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-2011-11-19-itunes-tag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2011-11-19-itunes-tag/" class="article-date">
+  <time datetime="2015-05-23T07:07:44.000Z" itemprop="datePublished">2015-05-23</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/misc/">misc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/05/23/2011-11-19-itunes-tag/">iTunes乱码处理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+<p>首先是安装Mutagen</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> mutagen</span><br></pre></td></tr></table></figure>
+<p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -iname <span class="string">"*.mp3"</span> -execdir mid3iconv -e gbk <span class="comment">--remove-v1 &#123;&#125; \;</span></span><br></pre></td></tr></table></figure>
+<p>效果是转换当前目录及子目录下的所有mp3标签为Unicode编码，并同时填满ID3v2, APEv2标签。</p>
+<p>-e gbk 参数只针对gbk编码，其他编码的文件则相应修改，如 -e big5 或者 -e gb18030。</p>
+<p>--remove-v1 参数则删除ID3v1标签，因为ID3v1不支持中文Unicode 编码Orz……所以如果播放器只支持ID3v1标签的话就会遇到问题——一片空白，这也是我还没想到解决办法的地方。不过就iTunes来说这样就足够了。</p>
+<hr>
+<p>EDIT1(May 30, 2014 12:42:34):</p>
+<p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install --<span class="keyword">build-from-source </span>readline</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2011-11-19-itunes-tag/" data-id="cia0p6ylj0000ahtaigfxaio4" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/itunes/">itunes</a></li></ul>
+
     </footer>
   </div>
   
@@ -132,7 +794,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2015/05/23/hello-world/" data-id="cia0out5z0001wsta5ul510tn" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2015/05/23/hello-world/" data-id="cia0p6yma0007ahta4mb2sbj5" class="article-share-link">Share</a>
       
       
     </footer>
@@ -148,16 +810,37 @@
           <aside id="sidebar">
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
+    </div>
+  </div>
+
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cn/">cn</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/en/">en</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/energy/">energy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gamedev/">gamedev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itunes/">itunes</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/">node.js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pl/">pl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scala/">scala</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/system/">system</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webdev/">webdev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xna/">xna</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
   
     
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cn/" style="font-size: 20px;">cn</a> <a href="/tags/en/" style="font-size: 10px;">en</a> <a href="/tags/energy/" style="font-size: 10px;">energy</a> <a href="/tags/game/" style="font-size: 10px;">game</a> <a href="/tags/gamedev/" style="font-size: 10px;">gamedev</a> <a href="/tags/itunes/" style="font-size: 10px;">itunes</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/pl/" style="font-size: 10px;">pl</a> <a href="/tags/scala/" style="font-size: 15px;">scala</a> <a href="/tags/system/" style="font-size: 10px;">system</a> <a href="/tags/webdev/" style="font-size: 10px;">webdev</a> <a href="/tags/xna/" style="font-size: 10px;">xna</a>
+    </div>
+  </div>
+
   
     
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">2</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">10</span></li></ul>
     </div>
   </div>
 
@@ -169,11 +852,23 @@
       <ul>
         
           <li>
-            <a href="/2015/05/23/Hello-Hexo/">Hello Hexo</a>
+            <a href="/2015/05/23/2014-06-06-variance-in-scala/">Variance in Scala</a>
           </li>
         
           <li>
-            <a href="/2015/05/23/hello-world/">Hello World</a>
+            <a href="/2015/05/23/2013-09-14-xna-vs2012/">如何在VS2012中创建XNA项目</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/23/2014-05-28-the-last-thing-d-needs/">The Last Thing D Needs</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/23/2014-05-09-scala-basics/">Scala基本语法与概念笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2015/05/23/2015-01-24-on-oil/">最近油价变动的一些笔记</a>
           </li>
         
       </ul>

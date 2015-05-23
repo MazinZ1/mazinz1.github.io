@@ -3,17 +3,30 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2015 | Hexo</title>
+  <title>iTunes乱码处理 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2015/index.html">
+  <meta name="description" content="使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。
+首先是安装Mutagen
+1pip install mutagen
+使用方法时配合find命令即可，我比较喜欢的方式是：
+1find . -iname &quot;*.mp3&quot; -execdir mid3iconv -e gbk --">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iTunes乱码处理">
+<meta property="og:url" content="http://yoursite.com/2015/05/23/2011-11-19-itunes-tag/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description">
+<meta property="og:description" content="使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。
+首先是安装Mutagen
+1pip install mutagen
+使用方法时配合find命令即可，我比较喜欢的方式是：
+1find . -iname &quot;*.mp3&quot; -execdir mid3iconv -e gbk --">
+<meta property="og:updated_time" content="2015-05-23T07:07:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
-<meta name="twitter:description">
+<meta name="twitter:title" content="iTunes乱码处理">
+<meta name="twitter:description" content="使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。
+首先是安装Mutagen
+1pip install mutagen
+使用方法时配合find命令即可，我比较喜欢的方式是：
+1find . -iname &quot;*.mp3&quot; -execdir mid3iconv -e gbk --">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,210 +72,79 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-06-06-variance-in-scala/" class="archive-article-date">
-  <time datetime="2015-05-23T07:18:49.000Z" itemprop="datePublished">May 23</time>
+        <section id="main"><article id="post-2011-11-19-itunes-tag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2011-11-19-itunes-tag/" class="article-date">
+  <time datetime="2015-05-23T07:07:44.000Z" itemprop="datePublished">2015-05-23</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/misc/">misc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-06-06-variance-in-scala/">Variance in Scala</a>
+    <h1 class="article-title" itemprop="name">
+      iTunes乱码处理
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2013-09-14-xna-vs2012/" class="archive-article-date">
-  <time datetime="2015-05-23T07:18:05.000Z" itemprop="datePublished">May 23</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2013-09-14-xna-vs2012/">如何在VS2012中创建XNA项目</a>
-    </h1>
-  
+        <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+<p>首先是安装Mutagen</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> mutagen</span><br></pre></td></tr></table></figure>
+<p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -iname <span class="string">"*.mp3"</span> -execdir mid3iconv -e gbk <span class="comment">--remove-v1 &#123;&#125; \;</span></span><br></pre></td></tr></table></figure>
+<p>效果是转换当前目录及子目录下的所有mp3标签为Unicode编码，并同时填满ID3v2, APEv2标签。</p>
+<p>-e gbk 参数只针对gbk编码，其他编码的文件则相应修改，如 -e big5 或者 -e gb18030。</p>
+<p>--remove-v1 参数则删除ID3v1标签，因为ID3v1不支持中文Unicode 编码Orz……所以如果播放器只支持ID3v1标签的话就会遇到问题——一片空白，这也是我还没想到解决办法的地方。不过就iTunes来说这样就足够了。</p>
+<hr>
+<p>EDIT1(May 30, 2014 12:42:34):</p>
+<p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install --<span class="keyword">build-from-source </span>readline</span><br></pre></td></tr></table></figure>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-28-the-last-thing-d-needs/" class="archive-article-date">
-  <time datetime="2015-05-23T07:17:05.000Z" itemprop="datePublished">May 23</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-28-the-last-thing-d-needs/">The Last Thing D Needs</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-09-scala-basics/" class="archive-article-date">
-  <time datetime="2015-05-23T07:15:44.000Z" itemprop="datePublished">May 23</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2011-11-19-itunes-tag/" data-id="cia0p6ylj0000ahtaigfxaio4" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-09-scala-basics/">Scala基本语法与概念笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2015-01-24-on-oil/" class="archive-article-date">
-  <time datetime="2015-05-23T07:09:44.000Z" itemprop="datePublished">May 23</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2015-01-24-on-oil/">最近油价变动的一些笔记</a>
-    </h1>
-  
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/itunes/">itunes</a></li></ul>
 
-    </header>
+    </footer>
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-17-nvm/" class="archive-article-date">
-  <time datetime="2015-05-23T07:09:11.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-17-nvm/">使用NVM管理Node.js</a>
-    </h1>
+    <a href="/2015/05/23/2012-12-31-latency-numbers/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Latency Numbers Every Programmer Should Know
+        
+      </div>
+    </a>
   
+  
+    <a href="/2015/05/23/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hello World</div>
+    </a>
+  
+</nav>
 
-    </header>
-  </div>
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2013-11-30-dangan-ronpa/" class="archive-article-date">
-  <time datetime="2015-05-23T07:08:38.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2013-11-30-dangan-ronpa/">超高校级的荒诞与超高校级的快感</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2012-12-31-latency-numbers/" class="archive-article-date">
-  <time datetime="2015-05-23T07:08:02.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2012-12-31-latency-numbers/">Latency Numbers Every Programmer Should Know</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2011-11-19-itunes-tag/" class="archive-article-date">
-  <time datetime="2015-05-23T07:07:44.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2011-11-19-itunes-tag/">iTunes乱码处理</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/hello-world/" class="archive-article-date">
-  <time datetime="2015-05-23T07:00:43.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/hello-world/">Hello World</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 </section>
         
           <aside id="sidebar">

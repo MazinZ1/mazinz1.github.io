@@ -3,17 +3,33 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2015 | Hexo</title>
+  <title>如何在VS2012中创建XNA项目 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/archives/2015/index.html">
+  <meta name="description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
+
+你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
+安装最新的Windows Marketplace Client
+安装XNA Game Studio 4.0
+将XNA的扩展文件夹从VS2010的路径拷">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何在VS2012中创建XNA项目">
+<meta property="og:url" content="http://yoursite.com/2015/05/23/2013-09-14-xna-vs2012/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description">
+<meta property="og:description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
+
+你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
+安装最新的Windows Marketplace Client
+安装XNA Game Studio 4.0
+将XNA的扩展文件夹从VS2010的路径拷">
+<meta property="og:updated_time" content="2015-05-23T07:18:05.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
-<meta name="twitter:description">
+<meta name="twitter:title" content="如何在VS2012中创建XNA项目">
+<meta name="twitter:description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
+
+你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
+安装最新的Windows Marketplace Client
+安装XNA Game Studio 4.0
+将XNA的扩展文件夹从VS2010的路径拷">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -59,210 +75,93 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2015" class="archive-year">2015</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-06-06-variance-in-scala/" class="archive-article-date">
-  <time datetime="2015-05-23T07:18:49.000Z" itemprop="datePublished">May 23</time>
+        <section id="main"><article id="post-2013-09-14-xna-vs2012" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/05/23/2013-09-14-xna-vs2012/" class="article-date">
+  <time datetime="2015-05-23T07:18:05.000Z" itemprop="datePublished">2015-05-23</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-06-06-variance-in-scala/">Variance in Scala</a>
+    <h1 class="article-title" itemprop="name">
+      如何在VS2012中创建XNA项目
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2013-09-14-xna-vs2012/" class="archive-article-date">
-  <time datetime="2015-05-23T07:18:05.000Z" itemprop="datePublished">May 23</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2013-09-14-xna-vs2012/">如何在VS2012中创建XNA项目</a>
-    </h1>
-  
+        <p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
+<ul>
+<li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了</li>
+<li>安装最新的<a href="http://www.xbox.com/en-US/LIVE/PC/DownloadClient" target="_blank" rel="external">Windows Marketplace Client</a></li>
+<li>安装XNA Game Studio 4.0</li>
+<li>将XNA的扩展文件夹从VS2010的路径拷贝到VS2012，如</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcopy /e "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 10.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0" "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0"</span><br></pre></td></tr></table></figure>
+<ul>
+<li>打开扩展文件夹里的<code>extension.vsixmanifest</code>，将里面的<code>Version</code>改成<code>11</code></li>
+<li>刷新一下VS</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\devenv</span>.exe" /setup</span><br></pre></td></tr></table></figure>
+<ul>
+<li>到<code>%LocalAppData%\Microsoft\VisualStudio\11.0\Extensions</code>目录下，把<code>extensionSdks.en-US.cache</code>和<code>extensions.en-US.cache</code>这样的缓存文件删除，不然新建项目时XNA扩展会无法加载。</li>
+</ul>
+<p>这里有个小trick，当VS挂掉而你想知道为什么时，使用下面的命令启动VS</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"</span> /log</span><br></pre></td></tr></table></figure>
+<p>这样的话VS就会生成debug log到<code>%AppData%\Microsoft\VisualStudio\11.0\ActivityLog.xml</code>了。</p>
+<p>EOF</p>
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012" target="_blank" rel="external">How to install XNA game studio on Visual Studio 2012?</a></li>
+<li><a href="http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8" target="_blank" rel="external">How to install the XNA Game Studio 4.0 in Windows 8?</a></li>
+<li><a href="http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx" target="_blank" rel="external">How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8</a></li>
+</ul>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-28-the-last-thing-d-needs/" class="archive-article-date">
-  <time datetime="2015-05-23T07:17:05.000Z" itemprop="datePublished">May 23</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-28-the-last-thing-d-needs/">The Last Thing D Needs</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-09-scala-basics/" class="archive-article-date">
-  <time datetime="2015-05-23T07:15:44.000Z" itemprop="datePublished">May 23</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2015/05/23/2013-09-14-xna-vs2012/" data-id="cia0p9nwf0000c8tajyrt8n9j" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-09-scala-basics/">Scala基本语法与概念笔记</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2015-01-24-on-oil/" class="archive-article-date">
-  <time datetime="2015-05-23T07:09:44.000Z" itemprop="datePublished">May 23</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2015-01-24-on-oil/">最近油价变动的一些笔记</a>
-    </h1>
-  
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gamedev/">gamedev</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xna/">xna</a></li></ul>
 
-    </header>
+    </footer>
   </div>
-</article>
   
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2014-05-17-nvm/" class="archive-article-date">
-  <time datetime="2015-05-23T07:09:11.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2014-05-17-nvm/">使用NVM管理Node.js</a>
-    </h1>
+    <a href="/2015/05/23/2014-06-06-variance-in-scala/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Variance in Scala
+        
+      </div>
+    </a>
   
+  
+    <a href="/2015/05/23/2014-05-28-the-last-thing-d-needs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">The Last Thing D Needs</div>
+    </a>
+  
+</nav>
 
-    </header>
-  </div>
+  
 </article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2013-11-30-dangan-ronpa/" class="archive-article-date">
-  <time datetime="2015-05-23T07:08:38.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2013-11-30-dangan-ronpa/">超高校级的荒诞与超高校级的快感</a>
-    </h1>
-  
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2012-12-31-latency-numbers/" class="archive-article-date">
-  <time datetime="2015-05-23T07:08:02.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2012-12-31-latency-numbers/">Latency Numbers Every Programmer Should Know</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/2011-11-19-itunes-tag/" class="archive-article-date">
-  <time datetime="2015-05-23T07:07:44.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/2011-11-19-itunes-tag/">iTunes乱码处理</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2015/05/23/hello-world/" class="archive-article-date">
-  <time datetime="2015-05-23T07:00:43.000Z" itemprop="datePublished">May 23</time>
-</a>
-      
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2015/05/23/hello-world/">Hello World</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
 </section>
         
           <aside id="sidebar">
