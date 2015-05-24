@@ -48,7 +48,7 @@
     <link href="http://mazinz1.github.io/2014/06/06/variance-in-scala/"/>
     <id>http://mazinz1.github.io/2014/06/06/variance-in-scala/</id>
     <published>2014-06-06T07:00:00.000Z</published>
-    <updated>2015-05-23T07:22:04.000Z</updated>
+    <updated>2015-05-24T01:52:17.000Z</updated>
     <content type="html"><![CDATA[<p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
 <p>Scala supports two forms of polymorphism: <em>sub-typing</em> and <em>generics</em>. Not only does the type system needs to deal with both of them independently, it also needs to correctly resolve their interactions. </p>
 <h2 id="Type_Bounds">Type Bounds</h2><p>In order to express the sub-typing relationship between type parameters, we need to introduce the concept of <em>type bounds</em>:</p>
@@ -90,17 +90,11 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NonEmpty[] a = <span class="keyword">new</span> NonEmpty[]&#123;<span class="keyword">new</span> NonEmpty(<span class="number">1</span>, Empty, Empty)&#125;;</span><br><span class="line">IntSet [] b = a;</span><br><span class="line">b[<span class="number">0</span>] = Empty;        <span class="comment">// throw an exception</span></span><br><span class="line">NonEmpty s = a[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
 <p>In Java, Arrays are covariant, which means <code>NonEmpty[] &lt;: IntSet[]</code>. Therefore, it is possible assign a ref of the subtype to a ref of the super-type, which is clearly problematic (see <code>IntSet [] b = a;</code>). Line 3 would throw an exception, which has runtime cost. </p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">a</span>:</span> <span class="type">Array</span>[<span class="type">NonEmpty</span>] = <span class="type">Array</span>(<span class="keyword">new</span> <span class="type">NonEmpty</span>(<span class="number">1</span>, <span class="type">Empty</span>, <span class="type">Empty</span>))</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">b</span>:</span> <span class="type">Array</span>[<span class="type">IntSet</span>] = a</span><br><span class="line">b(<span class="number">0</span>) = <span class="type">Empty</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">s</span>:</span> <span class="type">NonEmpty</span> = a(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.</p>
-<blockquote>
-<p>But immutable types can be covariant, if some conditions on methods are met. </p>
+<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.<br>However, immutable types can be covariant, if some conditions on methods are met. </p>
 <ul>
 <li>Covariant type params may appear in lower bounds of method type params</li>
 <li>Contravariant type params may appear in upper bounds of method</li>
 </ul>
-</blockquote>
-<p>Example:</p>
-<script src="https://gist.github.com/Zionyun/2a2181db8898c496ec56.js"></script>
-
 <hr>
 <h2 id="Reference">Reference</h2><ul>
 <li><a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a></li>

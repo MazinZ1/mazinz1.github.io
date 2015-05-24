@@ -13,7 +13,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
 <meta property="og:site_name" content="Echoes from the deep">
 <meta property="og:description" content="This is my note on the variance section in Coursera Functional Programming in Scala.
 Scala supports two forms of polymorphism: sub-typing and generics. Not only does the type system needs to deal with">
-<meta property="og:updated_time" content="2015-05-23T07:22:04.000Z">
+<meta property="og:updated_time" content="2015-05-24T01:52:17.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Variance in Scala">
 <meta name="twitter:description" content="This is my note on the variance section in Coursera Functional Programming in Scala.
@@ -131,17 +131,11 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">NonEmpty[] a = <span class="keyword">new</span> NonEmpty[]&#123;<span class="keyword">new</span> NonEmpty(<span class="number">1</span>, Empty, Empty)&#125;;</span><br><span class="line">IntSet [] b = a;</span><br><span class="line">b[<span class="number">0</span>] = Empty;        <span class="comment">// throw an exception</span></span><br><span class="line">NonEmpty s = a[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
 <p>In Java, Arrays are covariant, which means <code>NonEmpty[] &lt;: IntSet[]</code>. Therefore, it is possible assign a ref of the subtype to a ref of the super-type, which is clearly problematic (see <code>IntSet [] b = a;</code>). Line 3 would throw an exception, which has runtime cost. </p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">a</span>:</span> <span class="type">Array</span>[<span class="type">NonEmpty</span>] = <span class="type">Array</span>(<span class="keyword">new</span> <span class="type">NonEmpty</span>(<span class="number">1</span>, <span class="type">Empty</span>, <span class="type">Empty</span>))</span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">b</span>:</span> <span class="type">Array</span>[<span class="type">IntSet</span>] = a</span><br><span class="line">b(<span class="number">0</span>) = <span class="type">Empty</span></span><br><span class="line"><span class="function"><span class="keyword">val</span> <span class="title">s</span>:</span> <span class="type">NonEmpty</span> = a(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.</p>
-<blockquote>
-<p>But immutable types can be covariant, if some conditions on methods are met. </p>
+<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.<br>However, immutable types can be covariant, if some conditions on methods are met. </p>
 <ul>
 <li>Covariant type params may appear in lower bounds of method type params</li>
 <li>Contravariant type params may appear in upper bounds of method</li>
 </ul>
-</blockquote>
-<p>Example:</p>
-<script src="https://gist.github.com/Zionyun/2a2181db8898c496ec56.js"></script>
-
 <hr>
 <h2 id="Reference">Reference</h2><ul>
 <li><a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a></li>
@@ -154,7 +148,7 @@ Scala supports two forms of polymorphism: sub-typing and generics. Not only does
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cia19msrn000d76ta85nee2q1" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cia1t8xp1000ddmtaof4t82cz" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/06/06/variance-in-scala/#disqus_thread" class="article-comment-link">Comments</a>
       
