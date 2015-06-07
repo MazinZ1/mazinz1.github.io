@@ -1,0 +1,45 @@
+---
+layout: post
+title: "如何在VS2012中创建XNA项目"
+date: 2013/09/14
+categories: [dev]
+tags: [cn, gamedev, xna]
+---
+
+XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
+
+- 你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
+- 安装最新的[Windows Marketplace Client](http://www.xbox.com/en-US/LIVE/PC/DownloadClient)
+- 安装XNA Game Studio 4.0
+- 将XNA的扩展文件夹从VS2010的路径拷贝到VS2012，如
+
+~~~
+xcopy /e "C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\Extensions\Microsoft\XNA Game Studio 4.0" "C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\Extensions\Microsoft\XNA Game Studio 4.0"
+~~~
+
+- 打开扩展文件夹里的`extension.vsixmanifest`，将里面的`Version`改成`11`
+- 刷新一下VS
+
+~~~
+"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe" /setup
+~~~
+
+- 到`%LocalAppData%\Microsoft\VisualStudio\11.0\Extensions`目录下，把`extensionSdks.en-US.cache`和`extensions.en-US.cache`这样的缓存文件删除，不然新建项目时XNA扩展会无法加载。
+
+
+这里有个小trick，当VS挂掉而你想知道为什么时，使用下面的命令启动VS
+
+```powershell
+"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe" /log
+```
+
+这样的话VS就会生成debug log到`%AppData%\Microsoft\VisualStudio\11.0\ActivityLog.xml`了。
+
+EOF
+
+-------------------------------------------------
+
+## Reference
+- [How to install XNA game studio on Visual Studio 2012?](http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012)
+- [How to install the XNA Game Studio 4.0 in Windows 8?](http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8)
+- [How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8](http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx)
