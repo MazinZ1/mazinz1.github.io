@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title><![CDATA[Echoes from the deep]]></title>
-  
+  <title><![CDATA[云麓漫钞]]></title>
+  <subtitle><![CDATA[Echoes from the deep]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://mazinz1.github.io/"/>
   <updated>2015-05-23T07:22:13.000Z</updated>
   <id>http://mazinz1.github.io/</id>
   
   <author>
-    <name><![CDATA[MazinZ1]]></name>
+    <name><![CDATA[某雲]]></name>
     
   </author>
   
