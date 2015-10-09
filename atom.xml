@@ -4,7 +4,7 @@
   <subtitle><![CDATA[Echoes from the deep]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://mazinz1.github.io/"/>
-  <updated>2015-10-09T04:05:22.000Z</updated>
+  <updated>2015-10-09T04:06:19.000Z</updated>
   <id>http://mazinz1.github.io/</id>
   
   <author>
@@ -19,16 +19,14 @@
     <link href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/"/>
     <id>http://mazinz1.github.io/2015/10/08/rust-debug-structs/</id>
     <published>2015-10-09T03:32:42.000Z</published>
-    <updated>2015-10-09T04:05:22.000Z</updated>
-    <content type="html"><![CDATA[<p>title: “最近油价变动的一些笔记”<br>date: 2015/01/24</p>
-<h2 id="tags:_[energy,_cn]">tags: [energy, cn]</h2><p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
+    <updated>2015-10-09T04:06:19.000Z</updated>
+    <content type="html"><![CDATA[<p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
 <p>注意的是，如果你希望用<code>{}</code>打印结构体或者枚举变量，你还是需要为其实现<code>std::fmt::Display</code> <code>trait</code>。</p>
 <p>另外，如果你的结构体中还包含了别的结构体，你可能还是需要自己实现<code>std::fmt::Debug</code> <code>trait</code>来达到自己希望的打印效果。例如在下例(<a href="http://is.gd/C4QouO" target="_blank" rel="external">Rust Playground传送门</a>)中，<code>Deep(Structure(7))</code>会打印出<code>Deep(Structure(7))</code>，而<code>Flat(Structure(7))</code>则会通过自定义的实现打出<code>Structure(7)</code>。</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fmt;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Structure(<span class="keyword">i32</span>);</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Deep(Structure);</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Flat(Structure);</span><br><span class="line"><span class="keyword">impl</span> fmt::Debug <span class="keyword">for</span> Flat &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">fmt</span></span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter) -&gt; fmt::Result &#123;</span><br><span class="line">        <span class="keyword">match</span> *<span class="keyword">self</span> &#123;</span><br><span class="line">            Flat(Structure(num)) =&gt; <span class="built_in">write!</span>(f, <span class="string">"Structure(&#123;&#125;)"</span>, num),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Structure &#123;:?&#125;: "</span>, Structure(<span class="number">3</span>));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Deep &#123;:?&#125;: "</span>, Deep(Structure(<span class="number">7</span>)));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Flat &#123;:?&#125;: "</span>, Flat(Structure(<span class="number">7</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>title: “最近油价变动的一些笔记”<br>date: 2015/01/24</p>
-<h2 id="tags:_[energy,_cn]">tags: [energy, cn]</h2><p>在Rust中定义结构体(<code>struct</code>)或枚举(<c]]>
+    <![CDATA[<p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt]]>
     </summary>
     
       <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
