@@ -4,7 +4,7 @@
   <subtitle><![CDATA[Echoes from the deep]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://mazinz1.github.io/"/>
-  <updated>2015-10-09T04:04:21.000Z</updated>
+  <updated>2015-10-09T04:05:22.000Z</updated>
   <id>http://mazinz1.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/"/>
     <id>http://mazinz1.github.io/2015/10/08/rust-debug-structs/</id>
     <published>2015-10-09T03:32:42.000Z</published>
-    <updated>2015-10-09T04:04:21.000Z</updated>
+    <updated>2015-10-09T04:05:22.000Z</updated>
     <content type="html"><![CDATA[<p>title: “最近油价变动的一些笔记”<br>date: 2015/01/24</p>
 <h2 id="tags:_[energy,_cn]">tags: [energy, cn]</h2><p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
 <p>注意的是，如果你希望用<code>{}</code>打印结构体或者枚举变量，你还是需要为其实现<code>std::fmt::Display</code> <code>trait</code>。</p>
@@ -30,6 +30,8 @@
     <![CDATA[<p>title: “最近油价变动的一些笔记”<br>date: 2015/01/24</p>
 <h2 id="tags:_[energy,_cn]">tags: [energy, cn]</h2><p>在Rust中定义结构体(<code>struct</code>)或枚举(<c]]>
     </summary>
+    
+      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
     
       <category term="rust" scheme="http://mazinz1.github.io/tags/rust/"/>
     
