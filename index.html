@@ -72,6 +72,10 @@
   <time datetime="2015-10-09T03:32:42.000Z" itemprop="datePublished">2015-10-08</time>
 </a>
     
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
   </div>
   <div class="article-inner">
     
@@ -88,7 +92,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
+        <p>title: “最近油价变动的一些笔记”<br>date: 2015/01/24</p>
+<h2 id="tags:_[energy,_cn]">tags: [energy, cn]</h2><p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
 <p>注意的是，如果你希望用<code>{}</code>打印结构体或者枚举变量，你还是需要为其实现<code>std::fmt::Display</code> <code>trait</code>。</p>
 <p>另外，如果你的结构体中还包含了别的结构体，你可能还是需要自己实现<code>std::fmt::Debug</code> <code>trait</code>来达到自己希望的打印效果。例如在下例(<a href="http://is.gd/C4QouO" target="_blank" rel="external">Rust Playground传送门</a>)中，<code>Deep(Structure(7))</code>会打印出<code>Deep(Structure(7))</code>，而<code>Flat(Structure(7))</code>则会通过自定义的实现打出<code>Structure(7)</code>。</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fmt;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Structure(<span class="keyword">i32</span>);</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Deep(Structure);</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Flat(Structure);</span><br><span class="line"><span class="keyword">impl</span> fmt::Debug <span class="keyword">for</span> Flat &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">fmt</span></span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter) -&gt; fmt::Result &#123;</span><br><span class="line">        <span class="keyword">match</span> *<span class="keyword">self</span> &#123;</span><br><span class="line">            Flat(Structure(num)) =&gt; <span class="built_in">write!</span>(f, <span class="string">"Structure(&#123;&#125;)"</span>, num),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Structure &#123;:?&#125;: "</span>, Structure(<span class="number">3</span>));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Deep &#123;:?&#125;: "</span>, Deep(Structure(<span class="number">7</span>)));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Flat &#123;:?&#125;: "</span>, Flat(Structure(<span class="number">7</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -96,7 +101,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifj4n6ao0007fctavf9wgcv3" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifj4ptkk0007imtaj4yeynqb" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -150,7 +155,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifj4n6ar000afcta1x0v4cr0" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifj4ptkn000cimtarkq85bj8" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/01/24/on-oil/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -248,7 +253,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifj4n6ay000gfcta95lm8yn0" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifj4ptkp000iimtahxfd0mls" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/06/06/variance-in-scala/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -407,7 +412,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifj4n6b2000pfctakjmhgnh1" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifj4ptks000qimtar9p3ixgh" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -465,7 +470,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifj4n6b5000ufcta2t3vdlcz" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifj4ptkv000vimtatiwplph9" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/17/nvm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -539,7 +544,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifj4n6b90011fctaygwbyjae" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifj4ptky0012imtas9kw8x1m" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/09/scala-basics/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -590,7 +595,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifj4n6bc0015fctajtrklrck" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifj4ptl00016imtajslq97li" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/11/30/dangan-ronpa/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -660,7 +665,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifj4n6bf001bfcta6qjjpci9" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifj4ptl2001cimtaluwr7hxh" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/09/14/xna-vs2012/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -750,7 +755,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifj4n6bh001ifctaq6e69acn" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifj4ptl6001jimtan1fklxa1" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2012/12/31/latency-numbers/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -806,7 +811,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2011/11/19/itunes-tag/" data-id="cifj4n69s0000fctawuk6npaa" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2011/11/19/itunes-tag/" data-id="cifj4ptjq0000imta3h441or8" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2011/11/19/itunes-tag/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -829,7 +834,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">6</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
