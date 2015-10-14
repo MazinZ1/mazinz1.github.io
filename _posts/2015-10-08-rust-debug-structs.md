@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 如何在调试Rust时打印结构体的数据
+title: How to Print Rust Structs/Enums
 date: 2015-10-08 23:32:42
 categories: [dev]
 tags: [cn, rust]
