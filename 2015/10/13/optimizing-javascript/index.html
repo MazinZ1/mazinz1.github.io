@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2014 | 云麓漫钞</title>
+  <title>Node.js &quot;调优&quot; | 云麓漫钞</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="云麓漫钞">
-<meta property="og:url" content="http://mazinz1.github.io/archives/2014/index.html">
+  <meta name="description" content="前两天我在HN十大上看到了一篇Node.js调优的小tips，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个talk里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。
+首先，文章或者talk里的观点都是“v8会自动inline源代码字符数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Node.js "调优"">
+<meta property="og:url" content="http://mazinz1.github.io/2015/10/13/optimizing-javascript/index.html">
 <meta property="og:site_name" content="云麓漫钞">
-<meta property="og:description">
+<meta property="og:description" content="前两天我在HN十大上看到了一篇Node.js调优的小tips，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个talk里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。
+首先，文章或者talk里的观点都是“v8会自动inline源代码字符数">
+<meta property="og:updated_time" content="2015-10-14T01:47:02.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="云麓漫钞">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Node.js "调优"">
+<meta name="twitter:description" content="前两天我在HN十大上看到了一篇Node.js调优的小tips，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个talk里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。
+首先，文章或者talk里的观点都是“v8会自动inline源代码字符数">
 <meta name="twitter:creator" content="@mazin_z1">
   
     <link rel="alternative" href="/atom.xml" title="云麓漫钞" type="application/atom+xml">
@@ -64,96 +68,73 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2014" class="archive-year">2014</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/06/06/variance-in-scala/" class="archive-article-date">
-  <time datetime="2014-06-06T04:00:00.000Z" itemprop="datePublished">Jun 6</time>
+        <section id="main"><article id="post-optimizing-javascript" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/13/optimizing-javascript/" class="article-date">
+  <time datetime="2015-10-14T00:24:06.000Z" itemprop="datePublished">2015-10-13</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/06/06/variance-in-scala/">Variance in Scala</a>
+    <h1 class="article-title" itemprop="name">
+      Node.js &quot;调优&quot;
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/28/the-last-thing-d-needs/" class="archive-article-date">
-  <time datetime="2014-05-28T04:00:00.000Z" itemprop="datePublished">May 28</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
-    </h1>
-  
+        <p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
+<p>首先，文章或者talk里的观点都是“v8会自动inline源代码字符数在600以下的函数”，然而实际上更准确的说法应该是“v8绝对不会inline源代码字符数达到600的函数”。而且，源代码字符数并不是唯一的拒绝条件；即使在600字符以下，v8也有可能选择不将其inline。例如说，v8并不会inline超过196个AST节点的函数；而且在一个单独函数里，总计只能有196个AST节点能够被inlined[<a href="http://jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler" target="_blank" rel="external">1</a>]。具体例子可见<a href="https://chromium.googlesource.com/v8/v8.git/+/master/src/hydrogen.cc#8280" target="_blank" rel="external">代码</a>。在实际场景中应用这个技巧的话，效果可能并没有上面的hello world例子来得显著。</p>
+<p>不过既然v8提供了优化可能性，我们也是可以尽量尝试利用的。前端的JS代码一般发布前都会minified，所以已经利用了v8的这个优化可能性。需要注意的主要是用JS写的后端，也就是Node.js的代码。因为v8计算函数源代码时是包含了注释和空格的，所以把部分长注释移出函数之外也许是个不错的主意。这里插个题外话，也许会有同学想为什么v8不能直接把注释都去掉呢，这里有两个原因：其一是600字符数这个heuristic原本就是为了避免parse/tokenize过长的函数造成太大开销；其二是不少JS的代码都用了一些通过注释和<code>Function.prototype.toString()</code>来实现多行字符串(multiline string literal)的诡异技巧[<a href="https://news.ycombinator.com/item?id=10375297" target="_blank" rel="external">2</a>]，如下（来自[<a href="http://tomasz.janczuk.org/2013/05/multi-line-strings-in-javascript-and.html" target="_blank" rel="external">3</a>]））。因为这样的用例，注释不是说想去掉就去掉的……</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> html = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;<span class="comment">/*  </span><br><span class="line">  &lt;!DOCTYPE html&gt;  </span><br><span class="line">  &lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">      &lt;h1&gt;Hello, world!&lt;/h1&gt;  </span><br><span class="line">    &lt;/body&gt;  </span><br><span class="line">  &lt;/html&gt;          </span><br><span class="line">&#125;).toString().match(/[^]*\/\*([^]*)\*\/\&#125;$/)[1];</span></span><br></pre></td></tr></table></figure>
+<p>从相关的这个<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，这个600字符数的heuristic是不会在<code>Crankshaft</code>版本被修复了，但是下一代<code>TurboFan</code>应该会使用更准确的AST节点信息来计算是否inline的heuristic。另外文章和talk都提到了使用<code>max_inlined_source_size</code>来改变默认的600字符数限制，个人觉得进行这样的hacky调优时，还是需要结合benchmark。而且从<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，随意调大字符数限制并不一定会获得性能的提升。</p>
+<p>其实除了在v8上面调优，我们还有很多别的优化机会，例如说mraleph提到<code>for (let x ...)</code>一般会比<code>for (var x ...)</code>慢上三倍[<a href="https://twitter.com/mraleph/status/653708835320922112" target="_blank" rel="external">3</a>]……如果你非要用<code>let</code>不可的话，你至少应该把<code>let</code>移到<code>for()</code>之外。</p>
+<p>所以说，JS大法好！</p>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/17/nvm/" class="archive-article-date">
-  <time datetime="2014-05-17T04:00:00.000Z" itemprop="datePublished">May 17</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/09/scala-basics/" class="archive-article-date">
-  <time datetime="2014-05-09T04:00:00.000Z" itemprop="datePublished">May 9</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://mazinz1.github.io/2015/10/13/optimizing-javascript/" data-id="cifq4uwdg00074utaxmer8otf" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/09/scala-basics/">Scala基本语法与概念笔记</a>
-    </h1>
-  
+        <a href="http://mazinz1.github.io/2015/10/13/optimizing-javascript/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/10/08/rust-debug-structs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">如何在调试Rust时打印结构体的数据</div>
+    </a>
+  
+</nav>
+
+  
 </article>
-  
-  
-    </div></section>
-  
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+</section>
 </section>
         
           <aside id="sidebar">
@@ -249,11 +230,13 @@
 <script>
   var disqus_shortname = 'zionyun';
   
+  var disqus_url = 'http://mazinz1.github.io/2015/10/13/optimizing-javascript/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>

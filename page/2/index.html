@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives: 2014 | 云麓漫钞</title>
+  <title>云麓漫钞</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description">
 <meta property="og:type" content="website">
 <meta property="og:title" content="云麓漫钞">
-<meta property="og:url" content="http://mazinz1.github.io/archives/2014/index.html">
+<meta property="og:url" content="http://mazinz1.github.io/page/2/index.html">
 <meta property="og:site_name" content="云麓漫钞">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
@@ -66,93 +66,66 @@
       <div class="outer">
         <section id="main">
   
-  
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2014" class="archive-year">2014</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/06/06/variance-in-scala/" class="archive-article-date">
-  <time datetime="2014-06-06T04:00:00.000Z" itemprop="datePublished">Jun 6</time>
+    <article id="post-itunes-tag" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2011/11/19/itunes-tag/" class="article-date">
+  <time datetime="2011-11-19T05:00:00.000Z" itemprop="datePublished">2011-11-19</time>
 </a>
-      
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/misc/">misc</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
   
     <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/06/06/variance-in-scala/">Variance in Scala</a>
+      <a class="article-title" href="/2011/11/19/itunes-tag/">iTunes乱码处理</a>
     </h1>
   
 
-    </header>
-  </div>
-</article>
-  
+      </header>
     
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/28/the-last-thing-d-needs/" class="archive-article-date">
-  <time datetime="2014-05-28T04:00:00.000Z" itemprop="datePublished">May 28</time>
-</a>
+    <div class="article-entry" itemprop="articleBody">
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
-    </h1>
-  
+        <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+<p>首先是安装Mutagen</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> mutagen</span><br></pre></td></tr></table></figure>
+<p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -iname <span class="string">"*.mp3"</span> -execdir mid3iconv -e gbk <span class="comment">--remove-v1 &#123;&#125; \;</span></span><br></pre></td></tr></table></figure>
+<p>效果是转换当前目录及子目录下的所有mp3标签为Unicode编码，并同时填满ID3v2, APEv2标签。</p>
+<p>-e gbk 参数只针对gbk编码，其他编码的文件则相应修改，如 -e big5 或者 -e gb18030。</p>
+<p>--remove-v1 参数则删除ID3v1标签，因为ID3v1不支持中文Unicode 编码Orz……所以如果播放器只支持ID3v1标签的话就会遇到问题——一片空白，这也是我还没想到解决办法的地方。不过就iTunes来说这样就足够了。</p>
+<hr>
+<p>EDIT1(May 30, 2014 12:42:34):</p>
+<p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install --<span class="keyword">build-from-source </span>readline</span><br></pre></td></tr></table></figure>
 
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/17/nvm/" class="archive-article-date">
-  <time datetime="2014-05-17T04:00:00.000Z" itemprop="datePublished">May 17</time>
-</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
-    </h1>
-  
-
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      <a href="/2014/05/09/scala-basics/" class="archive-article-date">
-  <time datetime="2014-05-09T04:00:00.000Z" itemprop="datePublished">May 9</time>
-</a>
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://mazinz1.github.io/2011/11/19/itunes-tag/" data-id="cifq4uwcr00004uta1b8d7gqc" class="article-share-link">Share</a>
       
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2014/05/09/scala-basics/">Scala基本语法与概念笔记</a>
-    </h1>
-  
+        <a href="http://mazinz1.github.io/2011/11/19/itunes-tag/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/itunes/">itunes</a></li></ul>
 
-    </header>
+    </footer>
   </div>
+  
 </article>
+
+
   
   
-    </div></section>
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </nav>
   
 </section>
         

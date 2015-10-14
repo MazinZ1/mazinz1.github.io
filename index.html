@@ -66,6 +66,57 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-optimizing-javascript" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2015/10/13/optimizing-javascript/" class="article-date">
+  <time datetime="2015-10-14T00:24:06.000Z" itemprop="datePublished">2015-10-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/dev/">dev</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/13/optimizing-javascript/">Node.js &quot;调优&quot;</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
+<p>首先，文章或者talk里的观点都是“v8会自动inline源代码字符数在600以下的函数”，然而实际上更准确的说法应该是“v8绝对不会inline源代码字符数达到600的函数”。而且，源代码字符数并不是唯一的拒绝条件；即使在600字符以下，v8也有可能选择不将其inline。例如说，v8并不会inline超过196个AST节点的函数；而且在一个单独函数里，总计只能有196个AST节点能够被inlined[<a href="http://jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler" target="_blank" rel="external">1</a>]。具体例子可见<a href="https://chromium.googlesource.com/v8/v8.git/+/master/src/hydrogen.cc#8280" target="_blank" rel="external">代码</a>。在实际场景中应用这个技巧的话，效果可能并没有上面的hello world例子来得显著。</p>
+<p>不过既然v8提供了优化可能性，我们也是可以尽量尝试利用的。前端的JS代码一般发布前都会minified，所以已经利用了v8的这个优化可能性。需要注意的主要是用JS写的后端，也就是Node.js的代码。因为v8计算函数源代码时是包含了注释和空格的，所以把部分长注释移出函数之外也许是个不错的主意。这里插个题外话，也许会有同学想为什么v8不能直接把注释都去掉呢，这里有两个原因：其一是600字符数这个heuristic原本就是为了避免parse/tokenize过长的函数造成太大开销；其二是不少JS的代码都用了一些通过注释和<code>Function.prototype.toString()</code>来实现多行字符串(multiline string literal)的诡异技巧[<a href="https://news.ycombinator.com/item?id=10375297" target="_blank" rel="external">2</a>]，如下（来自[<a href="http://tomasz.janczuk.org/2013/05/multi-line-strings-in-javascript-and.html" target="_blank" rel="external">3</a>]））。因为这样的用例，注释不是说想去掉就去掉的……</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> html = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;<span class="comment">/*  </span><br><span class="line">  &lt;!DOCTYPE html&gt;  </span><br><span class="line">  &lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">      &lt;h1&gt;Hello, world!&lt;/h1&gt;  </span><br><span class="line">    &lt;/body&gt;  </span><br><span class="line">  &lt;/html&gt;          </span><br><span class="line">&#125;).toString().match(/[^]*\/\*([^]*)\*\/\&#125;$/)[1];</span></span><br></pre></td></tr></table></figure>
+<p>从相关的这个<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，这个600字符数的heuristic是不会在<code>Crankshaft</code>版本被修复了，但是下一代<code>TurboFan</code>应该会使用更准确的AST节点信息来计算是否inline的heuristic。另外文章和talk都提到了使用<code>max_inlined_source_size</code>来改变默认的600字符数限制，个人觉得进行这样的hacky调优时，还是需要结合benchmark。而且从<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，随意调大字符数限制并不一定会获得性能的提升。</p>
+<p>其实除了在v8上面调优，我们还有很多别的优化机会，例如说mraleph提到<code>for (let x ...)</code>一般会比<code>for (var x ...)</code>慢上三倍[<a href="https://twitter.com/mraleph/status/653708835320922112" target="_blank" rel="external">3</a>]……如果你非要用<code>let</code>不可的话，你至少应该把<code>let</code>移到<code>for()</code>之外。</p>
+<p>所以说，JS大法好！</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://mazinz1.github.io/2015/10/13/optimizing-javascript/" data-id="cifq4uwdg00074utaxmer8otf" class="article-share-link">Share</a>
+      
+        <a href="http://mazinz1.github.io/2015/10/13/optimizing-javascript/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node-js/">node.js</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/v8/">v8</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-rust-debug-structs" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2015/10/08/rust-debug-structs/" class="article-date">
@@ -95,12 +146,12 @@
         <p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
 <p>注意的是，如果你希望用<code>{}</code>打印结构体或者枚举变量，你还是需要为其实现<code>std::fmt::Display</code> <code>trait</code>。</p>
 <p>另外，如果你的结构体中还包含了别的结构体，你可能还是需要自己实现<code>std::fmt::Debug</code> <code>trait</code>来达到自己希望的打印效果。例如在下例(<a href="http://is.gd/C4QouO" target="_blank" rel="external">Rust Playground传送门</a>)中，<code>Deep(Structure(7))</code>会打印出<code>Deep(Structure(7))</code>，而<code>Flat(Structure(7))</code>则会通过自定义的实现打出<code>Structure(7)</code>。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fmt;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Structure(<span class="keyword">i32</span>);</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Deep(Structure);</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Flat(Structure);</span><br><span class="line"><span class="keyword">impl</span> fmt::Debug <span class="keyword">for</span> Flat &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">fmt</span></span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter) -&gt; fmt::Result &#123;</span><br><span class="line">        <span class="keyword">match</span> *<span class="keyword">self</span> &#123;</span><br><span class="line">            Flat(Structure(num)) =&gt; <span class="built_in">write!</span>(f, <span class="string">"Structure(&#123;&#125;)"</span>, num),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Structure &#123;:?&#125;: "</span>, Structure(<span class="number">3</span>));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Deep &#123;:?&#125;: "</span>, Deep(Structure(<span class="number">7</span>)));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Flat &#123;:?&#125;: "</span>, Flat(Structure(<span class="number">7</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fmt;</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Structure(<span class="keyword">i32</span>);</span><br><span class="line"></span><br><span class="line"><span class="preprocessor">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">struct</span> Deep(Structure);</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> Flat(Structure);</span><br><span class="line"><span class="keyword">impl</span> fmt::Debug <span class="keyword">for</span> Flat &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fn</span> <span class="title">fmt</span></span>(&amp;<span class="keyword">self</span>, f: &amp;<span class="keyword">mut</span> fmt::Formatter) -&gt; fmt::<span class="built_in">Result</span> &#123;</span><br><span class="line">        <span class="keyword">match</span> *<span class="keyword">self</span> &#123;</span><br><span class="line">            Flat(Structure(num)) =&gt; <span class="built_in">write!</span>(f, <span class="string">"Structure(&#123;&#125;)"</span>, num),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fn</span> <span class="title">main</span></span>() &#123;</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Structure &#123;:?&#125;: "</span>, Structure(<span class="number">3</span>));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Deep &#123;:?&#125;: "</span>, Deep(Structure(<span class="number">7</span>)));</span><br><span class="line">  <span class="built_in">println!</span>(<span class="string">"Flat &#123;:?&#125;: "</span>, Flat(Structure(<span class="number">7</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifj4skfw0007u2tascqnuvvr" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifq4uwdj000h4utas0jfrls7" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -154,7 +205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifj4skg0000du2takigfys5n" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifq4uwdm000m4utan0d047ld" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/01/24/on-oil/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -252,7 +303,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifj4skg2000ju2tami97447t" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifq4uwdp000s4utafzzl3uni" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/06/06/variance-in-scala/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -329,7 +380,7 @@
 <li><code>template(T&amp;&amp; param)<code>=</code>const int &amp;</code></li>
 <li><code>lambda (by-value capture)</code> = <code>const int</code></li>
 </ul>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x1 = <span class="number">0</span>;            <span class="comment">// int</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">x2</span><span class="params">(0)</span></span>;             <span class="comment">// int</span></span><br><span class="line"><span class="keyword">auto</span> x3 = &#123; <span class="number">0</span> &#125;;        <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"><span class="keyword">auto</span> x4 &#123; <span class="number">0</span> &#125;;          <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T param)</span></span>;</span><br><span class="line"></span><br><span class="line">f(&#123;<span class="number">0</span>&#125;);                 <span class="comment">// error! &#123;0&#125; has no type</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">auto</span> x1 = <span class="number">0</span>;            <span class="comment">// int</span></span><br><span class="line"><span class="function"><span class="keyword">auto</span> <span class="title">x2</span><span class="params">(<span class="number">0</span>)</span></span>;             <span class="comment">// int</span></span><br><span class="line"><span class="keyword">auto</span> x3 = &#123; <span class="number">0</span> &#125;;        <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"><span class="keyword">auto</span> x4 &#123; <span class="number">0</span> &#125;;          <span class="comment">// initializer_list&lt;int&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T param)</span></span>;</span><br><span class="line"></span><br><span class="line">f(&#123;<span class="number">0</span>&#125;);                 <span class="comment">// error! &#123;0&#125; has no type</span></span><br></pre></td></tr></table></figure>
 <p>最后这个例子说明了<code>auto</code>其实是有自己的一套推导法则的，只是Meyers也没办法解释这背后的逻辑了……</p>
 <h3 id="Inheritance_继承">Inheritance 继承</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Base &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doBaseWork</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> Derived: <span class="keyword">public</span> Base&lt;T&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doDerivedWork</span><span class="params">()</span></span><br><span class="line">    </span>&#123;</span><br><span class="line">        doBaseWork();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>C++对于模板内符号的<em>two-phase name lookup</em>应该是C++ gotchas里的经典场景了。<br>上面的代码是无法编译的，编译器会要求你显式地注明<code>doBaseWork()</code>依赖于类型参数<code>T</code>。<code>this-&gt;doBaseWork()</code>或者<code>Base::doBaseWork()</code>都能通过编译。但是之后出现了<code>Base</code>对于<code>int</code>类型的特化(specialization)的话，在实体化(instantiating)模版时还是一样会出错。</p>
@@ -411,7 +462,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifj4skg5000ru2tae9orqrb5" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifq4uwdr00104utavzrohit9" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -452,13 +503,13 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
-</code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code><span class="tag">nvm</span> <span class="tag">install</span> 0<span class="class">.10</span><span class="class">.28</span>
-<span class="tag">nvm</span> <span class="tag">use</span> 0<span class="class">.10</span><span class="class">.28</span>
-<span class="tag">nvm</span> <span class="tag">alias</span> <span class="tag">default</span> 0<span class="class">.10</span><span class="class">.28</span>
-</code></pre><h2 id="使所有用户共用同一个Node-js版本">使所有用户共用同一个Node.js版本</h2><pre><code>n=$(<span class="built_in">which</span> node);
-n=<span class="variable">${n%/bin/node}</span>;
-chmod -R <span class="number">755</span> <span class="variable">$n</span>/bin/*;
-sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="built_in">local</span>
+</code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code>nvm install <span class="number">0.10</span><span class="number">.28</span>
+nvm use <span class="number">0.10</span><span class="number">.28</span>
+nvm alias <span class="keyword">default</span> <span class="number">0.10</span><span class="number">.28</span>
+</code></pre><h2 id="使所有用户共用同一个Node-js版本">使所有用户共用同一个Node.js版本</h2><pre><code>n=<span class="variable">$(</span>which node);
+n=<span class="variable">${</span>n<span class="string">%/bin/</span>node};
+chmod -<span class="constant">R</span> <span class="number">755</span> <span class="variable">$n</span>/bin/*;
+sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class="keyword">lib</span>,<span class="title">share</span>} /<span class="title">usr</span>/<span class="title">local</span></span>
 </code></pre><p>NVM默认把Node.js安装到用户的Home目录下。为了使所有用户都能使用同一份Node.js的，上述命令会把当前激活的Node.js复制到<code>/usr/local/bin</code>目录下,并把权限设置成所有用户都能访问。如果你之后激活了另外一个版本(<code>nvm use vXX.XX.XX</code>)并向让它成为全局的Node.js版本，那只需要重新执行一遍上面的命令。</p>
 <p>EOF</p>
 <hr>
@@ -469,7 +520,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifj4skge000wu2tafbq54wnu" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifq4uwdu00154utaog8nr4u1" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/17/nvm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -543,7 +594,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifj4skgg0013u2ta18wk2zth" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifq4uwdw001b4utam6ugb5zx" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/09/scala-basics/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -594,7 +645,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifj4skgi0017u2tawyr9o4ri" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifq4uwdz001f4utaglm59k4w" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/11/30/dangan-ronpa/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -664,7 +715,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifj4skgk001du2tacmzj0emg" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifq4uwe1001l4utawkjonap8" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/09/14/xna-vs2012/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -754,7 +805,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifj4skgm001ku2tada4id7ul" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifq4uwe5001s4utaxyzdzw91" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2012/12/31/latency-numbers/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -768,62 +819,10 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
 
 
   
-    <article id="post-itunes-tag" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2011/11/19/itunes-tag/" class="article-date">
-  <time datetime="2011-11-19T05:00:00.000Z" itemprop="datePublished">2011-11-19</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/misc/">misc</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2011/11/19/itunes-tag/">iTunes乱码处理</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
-<p>首先是安装Mutagen</p>
-<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip <span class="keyword">install</span> mutagen</span><br></pre></td></tr></table></figure>
-<p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
-<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find . -iname <span class="string">"*.mp3"</span> -execdir mid3iconv -e gbk <span class="comment">--remove-v1 &#123;&#125; \;</span></span><br></pre></td></tr></table></figure>
-<p>效果是转换当前目录及子目录下的所有mp3标签为Unicode编码，并同时填满ID3v2, APEv2标签。</p>
-<p>-e gbk 参数只针对gbk编码，其他编码的文件则相应修改，如 -e big5 或者 -e gb18030。</p>
-<p>--remove-v1 参数则删除ID3v1标签，因为ID3v1不支持中文Unicode 编码Orz……所以如果播放器只支持ID3v1标签的话就会遇到问题——一片空白，这也是我还没想到解决办法的地方。不过就iTunes来说这样就足够了。</p>
-<hr>
-<p>EDIT1(May 30, 2014 12:42:34):</p>
-<p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
-<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">brew </span>install --<span class="keyword">build-from-source </span>readline</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2011/11/19/itunes-tag/" data-id="cifj4skf90000u2tan98nqrea" class="article-share-link">Share</a>
-      
-        <a href="http://mazinz1.github.io/2011/11/19/itunes-tag/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/itunes/">itunes</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </section>
         
@@ -833,7 +832,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
   <div class="widget-wrap">
     <h3 class="widget-title">Categories</h3>
     <div class="widget">
-      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">7</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/dev/">dev</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/economics/">economics</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/misc/">misc</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/review/">review</a><span class="category-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -842,7 +841,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
   <div class="widget-wrap">
     <h3 class="widget-title">Tags</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cn/">cn</a><span class="tag-list-count">9</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/en/">en</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/energy/">energy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gamedev/">gamedev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itunes/">itunes</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/">node.js</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pl/">pl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/">rust</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scala/">scala</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/system/">system</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webdev/">webdev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xna/">xna</a><span class="tag-list-count">1</span></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/c/">c++</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/cn/">cn</a><span class="tag-list-count">10</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/en/">en</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/energy/">energy</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/game/">game</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/gamedev/">gamedev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/itunes/">itunes</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/node-js/">node.js</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/pl/">pl</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/rust/">rust</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scala/">scala</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/system/">system</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/v8/">v8</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/webdev/">webdev</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xna/">xna</a><span class="tag-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -851,7 +850,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
   <div class="widget-wrap">
     <h3 class="widget-title">Tag Cloud</h3>
     <div class="widget tagcloud">
-      <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cn/" style="font-size: 20px;">cn</a> <a href="/tags/en/" style="font-size: 10px;">en</a> <a href="/tags/energy/" style="font-size: 10px;">energy</a> <a href="/tags/game/" style="font-size: 10px;">game</a> <a href="/tags/gamedev/" style="font-size: 10px;">gamedev</a> <a href="/tags/itunes/" style="font-size: 10px;">itunes</a> <a href="/tags/node-js/" style="font-size: 10px;">node.js</a> <a href="/tags/pl/" style="font-size: 10px;">pl</a> <a href="/tags/rust/" style="font-size: 10px;">rust</a> <a href="/tags/scala/" style="font-size: 15px;">scala</a> <a href="/tags/system/" style="font-size: 10px;">system</a> <a href="/tags/webdev/" style="font-size: 10px;">webdev</a> <a href="/tags/xna/" style="font-size: 10px;">xna</a>
+      <a href="/tags/c/" style="font-size: 10px;">c++</a> <a href="/tags/cn/" style="font-size: 20px;">cn</a> <a href="/tags/en/" style="font-size: 10px;">en</a> <a href="/tags/energy/" style="font-size: 10px;">energy</a> <a href="/tags/game/" style="font-size: 10px;">game</a> <a href="/tags/gamedev/" style="font-size: 10px;">gamedev</a> <a href="/tags/itunes/" style="font-size: 10px;">itunes</a> <a href="/tags/javascript/" style="font-size: 10px;">javascript</a> <a href="/tags/node-js/" style="font-size: 15px;">node.js</a> <a href="/tags/pl/" style="font-size: 10px;">pl</a> <a href="/tags/rust/" style="font-size: 10px;">rust</a> <a href="/tags/scala/" style="font-size: 15px;">scala</a> <a href="/tags/system/" style="font-size: 10px;">system</a> <a href="/tags/v8/" style="font-size: 10px;">v8</a> <a href="/tags/webdev/" style="font-size: 10px;">webdev</a> <a href="/tags/xna/" style="font-size: 10px;">xna</a>
     </div>
   </div>
 
@@ -860,7 +859,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/11/">November 2011</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/10/">October 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/01/">January 2015</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/05/">May 2014</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/11/">November 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2013/09/">September 2013</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2012/12/">December 2012</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2011/11/">November 2011</a><span class="archive-list-count">1</span></li></ul>
     </div>
   </div>
 
@@ -870,6 +869,10 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
     <h3 class="widget-title">Recents</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2015/10/13/optimizing-javascript/">Node.js &quot;调优&quot;</a>
+          </li>
         
           <li>
             <a href="/2015/10/08/rust-debug-structs/">如何在调试Rust时打印结构体的数据</a>
@@ -885,10 +888,6 @@ sudo cp -r <span class="variable">$n</span>/{bin,lib,share} /usr/<span class="bu
         
           <li>
             <a href="/2014/05/28/the-last-thing-d-needs/">The Last Thing D Needs</a>
-          </li>
-        
-          <li>
-            <a href="/2014/05/17/nvm/">使用NVM管理Node.js</a>
           </li>
         
       </ul>
