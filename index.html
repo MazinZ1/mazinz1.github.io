@@ -92,10 +92,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字节（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
+        <p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字符（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
 <p>首先，文章或者talk里的观点都是“v8会自动inline源代码字符数在600以下的函数”，然而实际上更准确的说法应该是“v8绝对不会inline源代码字符数达到600的函数”。而且，源代码字符数并不是唯一的拒绝条件；即使在600字符以下，v8也有可能选择不将其inline。例如说，v8并不会inline超过196个AST节点的函数；而且在一个单独函数里，总计只能有196个AST节点能够被inlined[<a href="http://jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler" target="_blank" rel="external">1</a>]。具体例子可见<a href="https://chromium.googlesource.com/v8/v8.git/+/master/src/hydrogen.cc#8280" target="_blank" rel="external">代码</a>。在实际场景中应用这个技巧的话，效果可能并没有上面的hello world例子来得显著。</p>
 <p>不过既然v8提供了优化可能性，我们也是可以尽量尝试利用的。前端的JS代码一般发布前都会minified，所以已经利用了v8的这个优化可能性。需要注意的主要是用JS写的后端，也就是Node.js的代码。因为v8计算函数源代码时是包含了注释和空格的，所以把部分长注释移出函数之外也许是个不错的主意。这里插个题外话，也许会有同学想为什么v8不能直接把注释都去掉呢，这里有两个原因：其一是600字符数这个heuristic原本就是为了避免parse/tokenize过长的函数造成太大开销；其二是不少JS的代码都用了一些通过注释和<code>Function.prototype.toString()</code>来实现多行字符串(multiline string literal)的诡异技巧[<a href="https://news.ycombinator.com/item?id=10375297" target="_blank" rel="external">2</a>]，例如下面来自[<a href="http://tomasz.janczuk.org/2013/05/multi-line-strings-in-javascript-and.html" target="_blank" rel="external">3</a>]的例子。因为这样的用例，注释不是说想去掉就去掉的……</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> html = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;<span class="comment">/*  </span><br><span class="line">  &lt;!DOCTYPE html&gt;  </span><br><span class="line">  &lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">      &lt;h1&gt;Hello, world!&lt;/h1&gt;  </span><br><span class="line">    &lt;/body&gt;  </span><br><span class="line">  &lt;/html&gt;          </span><br><span class="line">&#125;).toString().match(/[^]*\/\*([^]*)\*\/\&#125;$/)[1];</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> html = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;<span class="comment">/*  </span><br><span class="line">  &lt;!DOCTYPE html&gt;  </span><br><span class="line">  &lt;html&gt;  </span><br><span class="line">    &lt;body&gt;  </span><br><span class="line">      &lt;h1&gt;Hello, world!&lt;/h1&gt;  </span><br><span class="line">    &lt;/body&gt;  </span><br><span class="line">  &lt;/html&gt;          </span><br><span class="line">*/</span>&#125;).toString().match(<span class="regexp">/[^]*\/\*([^]*)\*\/\&#125;$/</span>)[<span class="number">1</span>];</span><br></pre></td></tr></table></figure>
 <p>从相关的这个<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，这个600字符数的heuristic是不会在<code>Crankshaft</code>版本被修复了，但是下一代<code>TurboFan</code>应该会使用更准确的AST节点信息来计算是否inline的heuristic。另外文章和talk都提到了使用<code>max_inlined_source_size</code>来改变默认的600字符数限制，个人觉得进行这样的hacky调优时，还是需要结合benchmark。而且从<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，随意调大字符数限制并不一定会获得性能的提升。</p>
 <p>其实除了在v8上面调优，我们还有很多别的优化机会，例如说mraleph提到<code>for (let x ...)</code>一般会比<code>for (var x ...)</code>慢上三倍[<a href="https://twitter.com/mraleph/status/653708835320922112" target="_blank" rel="external">3</a>]……如果你非要用<code>let</code>不可的话，你至少应该把<code>let</code>移到<code>for()</code>之外。</p>
 <p>所以说，JS大法好！</p>
@@ -103,7 +103,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/10/13/optimizing-javascript/" data-id="cifq55vwe0007datadc82palg" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/10/13/optimizing-javascript/" data-id="cifrhhjn00007x6taqlt78d47" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/10/13/optimizing-javascript/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -151,7 +151,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifq55vwh000hdata591t0gxi" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/10/08/rust-debug-structs/" data-id="cifrhhjn8000hx6ta8baind1s" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -205,7 +205,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifq55vwl000mdata4pus8b32" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2015/01/24/on-oil/" data-id="cifrhhjnb000mx6taj2vp380c" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2015/01/24/on-oil/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -303,7 +303,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifq55vwq000sdata1ymgk4w6" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/06/06/variance-in-scala/" data-id="cifrhhjne000sx6ta9pijfvym" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/06/06/variance-in-scala/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -462,7 +462,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifq55vws0010datars4zt159" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/" data-id="cifrhhjng0010x6tac63dtx33" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -520,7 +520,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifq55vww0015datasotshr88" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/17/nvm/" data-id="cifrhhjni0015x6taca3qpe4d" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/17/nvm/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -594,7 +594,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifq55vx0001bdatas0zb4c13" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2014/05/09/scala-basics/" data-id="cifrhhjnl001bx6ta876uq6xm" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2014/05/09/scala-basics/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -645,7 +645,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifq55vx2001fdatav307nzes" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/11/30/dangan-ronpa/" data-id="cifrhhjnn001fx6ta3sl55cpu" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/11/30/dangan-ronpa/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -715,7 +715,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifq55vx5001ldatap5atnyqa" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2013/09/14/xna-vs2012/" data-id="cifrhhjnq001lx6ta9i156mvi" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2013/09/14/xna-vs2012/#disqus_thread" class="article-comment-link">Comments</a>
       
@@ -805,7 +805,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifq55vx9001sdatagh5lwlx1" class="article-share-link">Share</a>
+      <a data-url="http://mazinz1.github.io/2012/12/31/latency-numbers/" data-id="cifrhhjnu001sx6ta47xxqrv0" class="article-share-link">Share</a>
       
         <a href="http://mazinz1.github.io/2012/12/31/latency-numbers/#disqus_thread" class="article-comment-link">Comments</a>
       
