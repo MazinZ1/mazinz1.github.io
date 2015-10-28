@@ -3,9 +3,9 @@
   <title><![CDATA[云麓漫钞]]></title>
   <subtitle><![CDATA[Echoes from the deep]]></subtitle>
   <link href="/atom.xml" rel="self"/>
-  <link href="http://mazinz1.github.io/"/>
+  <link href="http://zettoone.github.io/"/>
   <updated>2015-10-15T02:02:18.000Z</updated>
-  <id>http://mazinz1.github.io/</id>
+  <id>http://zettoone.github.io/</id>
   
   <author>
     <name><![CDATA[某雲]]></name>
@@ -16,8 +16,8 @@
   
   <entry>
     <title><![CDATA[On "Optimizing Node.js"]]></title>
-    <link href="http://mazinz1.github.io/2015/10/13/optimizing-javascript/"/>
-    <id>http://mazinz1.github.io/2015/10/13/optimizing-javascript/</id>
+    <link href="http://zettoone.github.io/2015/10/13/optimizing-javascript/"/>
+    <id>http://zettoone.github.io/2015/10/13/optimizing-javascript/</id>
     <published>2015-10-14T00:24:06.000Z</published>
     <updated>2015-10-15T02:02:18.000Z</updated>
     <content type="html"><![CDATA[<p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字符（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
@@ -32,22 +32,22 @@
     <![CDATA[<p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="javascript" scheme="http://mazinz1.github.io/tags/javascript/"/>
+      <category term="javascript" scheme="http://zettoone.github.io/tags/javascript/"/>
     
-      <category term="node.js" scheme="http://mazinz1.github.io/tags/node-js/"/>
+      <category term="node.js" scheme="http://zettoone.github.io/tags/node-js/"/>
     
-      <category term="v8" scheme="http://mazinz1.github.io/tags/v8/"/>
+      <category term="v8" scheme="http://zettoone.github.io/tags/v8/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[How to Print Rust Structs/Enums]]></title>
-    <link href="http://mazinz1.github.io/2015/10/08/rust-debug-structs/"/>
-    <id>http://mazinz1.github.io/2015/10/08/rust-debug-structs/</id>
+    <link href="http://zettoone.github.io/2015/10/08/rust-debug-structs/"/>
+    <id>http://zettoone.github.io/2015/10/08/rust-debug-structs/</id>
     <published>2015-10-09T03:32:42.000Z</published>
     <updated>2015-10-15T02:06:09.000Z</updated>
     <content type="html"><![CDATA[<p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt::Debug</code> <code>trait</code>的实现。然后在打印时使用<code>{:?}</code>则可以打印出变量类型的数据表示。</p>
@@ -59,18 +59,18 @@
     <![CDATA[<p>在Rust中定义结构体(<code>struct</code>)或枚举(<code>enum</code>)类型时，可以在定义前加上属性<code>#[derive(Debug)]</code>。这样可以让编译器为该类型自动派生(derive)出<code>std::fmt]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="rust" scheme="http://mazinz1.github.io/tags/rust/"/>
+      <category term="rust" scheme="http://zettoone.github.io/tags/rust/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[最近油价变动的一些笔记]]></title>
-    <link href="http://mazinz1.github.io/2015/01/24/on-oil/"/>
-    <id>http://mazinz1.github.io/2015/01/24/on-oil/</id>
+    <link href="http://zettoone.github.io/2015/01/24/on-oil/"/>
+    <id>http://zettoone.github.io/2015/01/24/on-oil/</id>
     <published>2015-01-24T05:00:00.000Z</published>
     <updated>2015-05-23T07:22:13.000Z</updated>
     <content type="html"><![CDATA[<p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便宜了。</p>
@@ -88,18 +88,18 @@
     <![CDATA[<p>以前住的公寓到公司不到10分钟的步行距离，让无须驾驶的我没法切身感受到油价变化对自己生活的影响。可是自从上个月搬家后，我变得必须每天和车了。上周车的油箱空了，我按照Maggie的嘱咐，到加油站买40加元的91汽油，最后竟然装不下Mini的油箱，我才真正明白：这油现在也是太便]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="energy" scheme="http://mazinz1.github.io/tags/energy/"/>
+      <category term="energy" scheme="http://zettoone.github.io/tags/energy/"/>
     
-      <category term="economics" scheme="http://mazinz1.github.io/categories/economics/"/>
+      <category term="economics" scheme="http://zettoone.github.io/categories/economics/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Variance in Scala]]></title>
-    <link href="http://mazinz1.github.io/2014/06/06/variance-in-scala/"/>
-    <id>http://mazinz1.github.io/2014/06/06/variance-in-scala/</id>
+    <link href="http://zettoone.github.io/2014/06/06/variance-in-scala/"/>
+    <id>http://zettoone.github.io/2014/06/06/variance-in-scala/</id>
     <published>2014-06-06T04:00:00.000Z</published>
     <updated>2015-05-24T01:52:17.000Z</updated>
     <content type="html"><![CDATA[<p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
@@ -161,20 +161,20 @@
     <![CDATA[<p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Cou]]>
     </summary>
     
-      <category term="en" scheme="http://mazinz1.github.io/tags/en/"/>
+      <category term="en" scheme="http://zettoone.github.io/tags/en/"/>
     
-      <category term="pl" scheme="http://mazinz1.github.io/tags/pl/"/>
+      <category term="pl" scheme="http://zettoone.github.io/tags/pl/"/>
     
-      <category term="scala" scheme="http://mazinz1.github.io/tags/scala/"/>
+      <category term="scala" scheme="http://zettoone.github.io/tags/scala/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[The Last Thing D Needs]]></title>
-    <link href="http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/"/>
-    <id>http://mazinz1.github.io/2014/05/28/the-last-thing-d-needs/</id>
+    <link href="http://zettoone.github.io/2014/05/28/the-last-thing-d-needs/"/>
+    <id>http://zettoone.github.io/2014/05/28/the-last-thing-d-needs/</id>
     <published>2014-05-28T04:00:00.000Z</published>
     <updated>2015-05-23T07:21:55.000Z</updated>
     <content type="html"><![CDATA[<p>“I am not here to bash C++” — Scott Meyers, 2014</p>
@@ -298,18 +298,18 @@
 <p>今年DConf把Scott Meyers (Effetive C++系列的作者) 请过来做<a href="http://www.ustream.tv/recor]]>
     </summary>
     
-      <category term="c++" scheme="http://mazinz1.github.io/tags/c/"/>
+      <category term="c++" scheme="http://zettoone.github.io/tags/c/"/>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[使用NVM管理Node.js]]></title>
-    <link href="http://mazinz1.github.io/2014/05/17/nvm/"/>
-    <id>http://mazinz1.github.io/2014/05/17/nvm/</id>
+    <link href="http://zettoone.github.io/2014/05/17/nvm/"/>
+    <id>http://zettoone.github.io/2014/05/17/nvm/</id>
     <published>2014-05-17T04:00:00.000Z</published>
     <updated>2015-05-23T07:21:44.000Z</updated>
     <content type="html"><![CDATA[<h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
@@ -331,20 +331,20 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
     <![CDATA[<h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/ma]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="node.js" scheme="http://mazinz1.github.io/tags/node-js/"/>
+      <category term="node.js" scheme="http://zettoone.github.io/tags/node-js/"/>
     
-      <category term="webdev" scheme="http://mazinz1.github.io/tags/webdev/"/>
+      <category term="webdev" scheme="http://zettoone.github.io/tags/webdev/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Scala基本语法与概念笔记]]></title>
-    <link href="http://mazinz1.github.io/2014/05/09/scala-basics/"/>
-    <id>http://mazinz1.github.io/2014/05/09/scala-basics/</id>
+    <link href="http://zettoone.github.io/2014/05/09/scala-basics/"/>
+    <id>http://zettoone.github.io/2014/05/09/scala-basics/</id>
     <published>2014-05-09T04:00:00.000Z</published>
     <updated>2015-05-23T07:21:32.000Z</updated>
     <content type="html"><![CDATA[<h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供部分的实际参数，而另外一部分参数则使用<code>_</code>来代替，这样会得到另外一个函数。<code>_</code>实际上起到一个匿名通配符 (unnamed wildcard) 的作用。</p>
@@ -382,18 +382,18 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
     <![CDATA[<h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="scala" scheme="http://mazinz1.github.io/tags/scala/"/>
+      <category term="scala" scheme="http://zettoone.github.io/tags/scala/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[超高校级的荒诞与超高校级的快感]]></title>
-    <link href="http://mazinz1.github.io/2013/11/30/dangan-ronpa/"/>
-    <id>http://mazinz1.github.io/2013/11/30/dangan-ronpa/</id>
+    <link href="http://zettoone.github.io/2013/11/30/dangan-ronpa/"/>
+    <id>http://zettoone.github.io/2013/11/30/dangan-ronpa/</id>
     <published>2013-11-30T05:00:00.000Z</published>
     <updated>2015-05-23T07:21:21.000Z</updated>
     <content type="html"><![CDATA[<p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
@@ -409,18 +409,18 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
 <p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="game" scheme="http://mazinz1.github.io/tags/game/"/>
+      <category term="game" scheme="http://zettoone.github.io/tags/game/"/>
     
-      <category term="review" scheme="http://mazinz1.github.io/categories/review/"/>
+      <category term="review" scheme="http://zettoone.github.io/categories/review/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[如何在VS2012中创建XNA项目]]></title>
-    <link href="http://mazinz1.github.io/2013/09/14/xna-vs2012/"/>
-    <id>http://mazinz1.github.io/2013/09/14/xna-vs2012/</id>
+    <link href="http://zettoone.github.io/2013/09/14/xna-vs2012/"/>
+    <id>http://zettoone.github.io/2013/09/14/xna-vs2012/</id>
     <published>2013-09-14T04:00:00.000Z</published>
     <updated>2015-05-23T07:21:11.000Z</updated>
     <content type="html"><![CDATA[<p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
@@ -456,20 +456,20 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
 <li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了<]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="gamedev" scheme="http://mazinz1.github.io/tags/gamedev/"/>
+      <category term="gamedev" scheme="http://zettoone.github.io/tags/gamedev/"/>
     
-      <category term="xna" scheme="http://mazinz1.github.io/tags/xna/"/>
+      <category term="xna" scheme="http://zettoone.github.io/tags/xna/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[Latency Numbers Every Programmer Should Know]]></title>
-    <link href="http://mazinz1.github.io/2012/12/31/latency-numbers/"/>
-    <id>http://mazinz1.github.io/2012/12/31/latency-numbers/</id>
+    <link href="http://zettoone.github.io/2012/12/31/latency-numbers/"/>
+    <id>http://zettoone.github.io/2012/12/31/latency-numbers/</id>
     <published>2012-12-31T05:00:00.000Z</published>
     <updated>2015-05-23T07:20:40.000Z</updated>
     <content type="html"><![CDATA[<p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,<br>一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
@@ -523,18 +523,18 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
     <![CDATA[<p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="system" scheme="http://mazinz1.github.io/tags/system/"/>
+      <category term="system" scheme="http://zettoone.github.io/tags/system/"/>
     
-      <category term="dev" scheme="http://mazinz1.github.io/categories/dev/"/>
+      <category term="dev" scheme="http://zettoone.github.io/categories/dev/"/>
     
   </entry>
   
   <entry>
     <title><![CDATA[iTunes乱码处理]]></title>
-    <link href="http://mazinz1.github.io/2011/11/19/itunes-tag/"/>
-    <id>http://mazinz1.github.io/2011/11/19/itunes-tag/</id>
+    <link href="http://zettoone.github.io/2011/11/19/itunes-tag/"/>
+    <id>http://zettoone.github.io/2011/11/19/itunes-tag/</id>
     <published>2011-11-19T05:00:00.000Z</published>
     <updated>2015-05-23T07:20:31.000Z</updated>
     <content type="html"><![CDATA[<p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
@@ -556,11 +556,11 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
 <figure class="highlight ]]>
     </summary>
     
-      <category term="cn" scheme="http://mazinz1.github.io/tags/cn/"/>
+      <category term="cn" scheme="http://zettoone.github.io/tags/cn/"/>
     
-      <category term="itunes" scheme="http://mazinz1.github.io/tags/itunes/"/>
+      <category term="itunes" scheme="http://zettoone.github.io/tags/itunes/"/>
     
-      <category term="misc" scheme="http://mazinz1.github.io/categories/misc/"/>
+      <category term="misc" scheme="http://zettoone.github.io/categories/misc/"/>
     
   </entry>
   
