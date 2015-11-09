@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://zettoone.github.io/2015/11/08/planescape/</loc>
+    <lastmod>2015-11-09T03:40:55.000Z</lastmod>
+  </url>
+  
+  <url>
     <loc>http://zettoone.github.io/2015/10/08/rust-debug-structs/</loc>
     <lastmod>2015-10-15T02:06:09.000Z</lastmod>
   </url>
