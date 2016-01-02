@@ -3,33 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>如何在VS2012中创建XNA项目 | 云麓漫钞</title>
+  <title>Archives: 2015/12 | 云麓漫钞</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
-
-你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
-安装最新的Windows Marketplace Client
-安装XNA Game Studio 4.0
-将XNA的扩展文件夹从VS2010的路径拷">
-<meta property="og:type" content="article">
-<meta property="og:title" content="如何在VS2012中创建XNA项目">
-<meta property="og:url" content="http://zettoone.github.io/2013/09/14/xna-vs2012/index.html">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="云麓漫钞">
+<meta property="og:url" content="http://zettoone.github.io/archives/2015/12/index.html">
 <meta property="og:site_name" content="云麓漫钞">
-<meta property="og:description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
-
-你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
-安装最新的Windows Marketplace Client
-安装XNA Game Studio 4.0
-将XNA的扩展文件夹从VS2010的路径拷">
-<meta property="og:updated_time" content="2015-05-23T07:21:11.000Z">
+<meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何在VS2012中创建XNA项目">
-<meta name="twitter:description" content="XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……
-
-你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了
-安装最新的Windows Marketplace Client
-安装XNA Game Studio 4.0
-将XNA的扩展文件夹从VS2010的路径拷">
+<meta name="twitter:title" content="云麓漫钞">
+<meta name="twitter:description">
 <meta name="twitter:creator" content="@mazin_z1">
   
     <link rel="alternative" href="/atom.xml" title="云麓漫钞" type="application/atom+xml">
@@ -80,101 +64,39 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-xna-vs2012" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2013/09/14/xna-vs2012/" class="article-date">
-  <time datetime="2013-09-14T04:00:00.000Z" itemprop="datePublished">2013-09-14</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/dev/">dev</a>
-  </div>
-
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
+        <section id="main">
   
-    <h1 class="article-title" itemprop="name">
-      如何在VS2012中创建XNA项目
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2015" class="archive-year">2015</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      <a href="/2015/12/27/her-story/" class="archive-article-date">
+  <time datetime="2015-12-27T05:00:00.000Z" itemprop="datePublished">Dec 27</time>
+</a>
+      
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2015/12/27/her-story/">Her Story</a>
     </h1>
   
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
-<ul>
-<li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了</li>
-<li>安装最新的<a href="http://www.xbox.com/en-US/LIVE/PC/DownloadClient" target="_blank" rel="external">Windows Marketplace Client</a></li>
-<li>安装XNA Game Studio 4.0</li>
-<li>将XNA的扩展文件夹从VS2010的路径拷贝到VS2012，如</li>
-</ul>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xcopy /e "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 10.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0" "C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\Extensions</span><span class="command">\Microsoft</span><span class="command">\XNA</span> Game Studio 4.0"</span><br></pre></td></tr></table></figure>
-<ul>
-<li>打开扩展文件夹里的<code>extension.vsixmanifest</code>，将里面的<code>Version</code>改成<code>11</code></li>
-<li>刷新一下VS</li>
-</ul>
-<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">"C:<span class="command">\Program</span> Files (x86)<span class="command">\Microsoft</span> Visual Studio 11.0<span class="command">\Common</span>7<span class="command">\IDE</span><span class="command">\devenv</span>.exe" /setup</span><br></pre></td></tr></table></figure>
-<ul>
-<li>到<code>%LocalAppData%\Microsoft\VisualStudio\11.0\Extensions</code>目录下，把<code>extensionSdks.en-US.cache</code>和<code>extensions.en-US.cache</code>这样的缓存文件删除，不然新建项目时XNA扩展会无法加载。</li>
-</ul>
-<p>这里有个小trick，当VS挂掉而你想知道为什么时，使用下面的命令启动VS</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"</span> /log</span><br></pre></td></tr></table></figure>
-<p>这样的话VS就会生成debug log到<code>%AppData%\Microsoft\VisualStudio\11.0\ActivityLog.xml</code>了。</p>
-<p>EOF</p>
-<hr>
-<h2 id="Reference">Reference</h2><ul>
-<li><a href="http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012" target="_blank" rel="external">How to install XNA game studio on Visual Studio 2012?</a></li>
-<li><a href="http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8" target="_blank" rel="external">How to install the XNA Game Studio 4.0 in Windows 8?</a></li>
-<li><a href="http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx" target="_blank" rel="external">How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8</a></li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://zettoone.github.io/2013/09/14/xna-vs2012/" data-id="ciiwgyazv001udctaeajn8tm4" class="article-share-link">Share</a>
-      
-        <a href="http://zettoone.github.io/2013/09/14/xna-vs2012/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/cn/">cn</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/gamedev/">gamedev</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/xna/">xna</a></li></ul>
-
-    </footer>
+    </header>
   </div>
-  
-    
-<nav id="article-nav">
-  
-    <a href="/2013/11/30/dangan-ronpa/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          超高校级的荒诞与超高校级的快感
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2012/12/31/latency-numbers/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">Latency Numbers Every Programmer Should Know</div>
-    </a>
-  
-</nav>
-
-  
 </article>
-
-
-<section id="comments">
-  <div id="disqus_thread">
-    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-  </div>
-</section>
+  
+  
+    </div></section>
+  
 </section>
         
           <aside id="sidebar">
@@ -270,13 +192,11 @@
 <script>
   var disqus_shortname = 'zettoone';
   
-  var disqus_url = 'http://zettoone.github.io/2013/09/14/xna-vs2012/';
-  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
