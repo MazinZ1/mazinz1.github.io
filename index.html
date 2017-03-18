@@ -211,6 +211,16 @@
         </li>
       
         
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
         <li class="menu-item menu-item-tags">
           <a href="/tags" rel="section">
             
@@ -239,166 +249,6 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2016/10/18/median-of-two-sorted-arrays/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/10/18/median-of-two-sorted-arrays/" itemprop="url">
-                  Median of Two Sorted Arrays
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-18T23:52:14-04:00">
-                2016-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/10/18/median-of-two-sorted-arrays/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/10/18/median-of-two-sorted-arrays/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>编号004，你懂的。</p>
-<p>假设两数列总共的元素数量为偶数2k，中位数则为k和k+1大的两数值的平均值；而当总元素数量为奇数2k+1，中位数则为第k+1大的元素。<br>这题简单的解答方式是实现一个merge函数，将两个已排序的数列合并成一个排序的数列，再根据中位数的定义求出值。<br>我们也还可以做一些基本的优化，例如说我们并不需要最后的排序结果，所以我们只需要维护一个counter，按序读出数字，然后再counter为0时计算中位数。<br>这个方法的时间复杂度是<code>O(n)</code>。</p>
-<p>而如果想进一步达到<code>O(log(m + n))</code>的话，我们可以用分治的思路，定义一个查找两个排序数列中第k大的元素<code>find_kth</code>。<br>与简单的二分法应用有所不同的话，我们这里有两个数列，所以我们需要仔细考虑一下递归时的边界条件。</p>
-<p>假设数组<code>a</code>的长度为<code>m</code>，数组<code>b</code>的长度为<code>n</code>，且<code>m &gt; n &gt;= k/2</code>，那么我们可以用两个变量<code>i</code>和<code>j</code>分别指向两数列中的第<code>k/2</code>个数。<br>如果<code>a[i] == b[j]</code>，那我们就已经找到中位数了；如果<code>a[i] &gt; b[j]</code>，则<code>j</code>所指的元素比<code>a</code>中的<code>k/2</code>个元素都要小，所以<code>b[0:k/2]</code>都不可能存在中位数，因此我们可以只考虑<code>b[k/2+1:]</code>部分；如果<code>a[i] &lt; b[j]</code>则同理，我们只考虑<code>a[k/2+1:]</code>部分。<br>每一次迭代，<code>a</code>和<code>b</code>的总长度都会减少<code>k/2</code><br>之后我们再在剩下的两个数列里寻找第<code>(k - k/2)</code>大的元素。</p>
-<p>接下来我们考虑几个base cases。<br>随着递归过程一直减少的变量分别有：<code>a</code>和<code>b</code>的长度<code>m</code>和<code>n</code>，还有<code>k</code>。<br>假设<code>m &gt; n</code>，那么当<code>n</code>的长度为0时，我们就直接在<code>a</code>里面找第<code>k</code>大的元素。<br>当<code>k = 1</code>时，我们直接看两数列的开头，然后选择较小的一个。</p>
-<p>我们还要考虑边界条件。<br>假设<code>m &gt; n</code>，当<code>n &lt; k/2</code>时，我们最多只能在<code>b</code>中取<code>n</code>个数，而在<code>a</code>中我们要取<code>k - n</code>个数。<br>结合<code>n &gt;= k/2</code>的情况，可知我们在<code>b</code>中取<code>kb = min(k/2, n)</code>，而相应在<code>a</code>中取<code>ka = k - kb</code>。</p>
-<p>最后的Python实现如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">findMedianSortedArrays</span><span class="params">(self, nums1, nums2)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">find_kth</span><span class="params">(k, a, i, b, j)</span>:</span></div><div class="line">        m = len(a) - i</div><div class="line">        n = len(b) - j</div><div class="line">        <span class="keyword">if</span> m &lt; n:</div><div class="line">            <span class="keyword">return</span> find_kth(k, b, j, a, i)</div><div class="line">        <span class="keyword">if</span> n == <span class="number">0</span>:</div><div class="line">            <span class="keyword">return</span> a[i + k - <span class="number">1</span>]</div><div class="line">        <span class="keyword">if</span> k == <span class="number">1</span>:</div><div class="line">            <span class="keyword">return</span> min(a[i], b[j])</div><div class="line"></div><div class="line">        kb = min(k // <span class="number">2</span>, n) <span class="comment"># len(a) &gt;= len(b), therefore ka &gt;= k</span></div><div class="line">        ka = k - kb</div><div class="line">        ma = i + ka - <span class="number">1</span></div><div class="line">        mb = j + kb - <span class="number">1</span></div><div class="line">        <span class="keyword">if</span> a[ma] == b[mb]:</div><div class="line">            <span class="keyword">return</span> a[ma]</div><div class="line">        <span class="keyword">if</span> a[ma] &gt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - kb, a, i, b, j + kb)</div><div class="line">        <span class="keyword">if</span> a[ma] &lt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - ka, a, i + ka, b, j)</div><div class="line"></div><div class="line">    total = len(nums1) + len(nums2)</div><div class="line">    <span class="keyword">if</span> total % <span class="number">2</span> == <span class="number">0</span>:</div><div class="line">        <span class="keyword">return</span> (find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>) +</div><div class="line">                find_kth(total // <span class="number">2</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)) / <span class="number">2.0</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
     
       
 
@@ -471,8 +321,19 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/misc/" itemprop="url" rel="index">
-                    <span itemprop="name">misc</span>
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/personal/" itemprop="url" rel="index">
+                    <span itemprop="name">personal</span>
                   </a>
                 </span>
 
@@ -627,7 +488,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/review/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/review/" itemprop="url" rel="index">
                     <span itemprop="name">review</span>
                   </a>
                 </span>
@@ -785,7 +657,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -944,7 +827,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -1100,7 +994,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/economics/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/economics/" itemprop="url" rel="index">
                     <span itemprop="name">economics</span>
                   </a>
                 </span>
@@ -1262,7 +1167,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/en/" itemprop="url" rel="index">
+                    <span itemprop="name">en</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/en/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -1468,7 +1384,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -1735,7 +1662,18 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -1901,7 +1839,18 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/dev/" itemprop="url" rel="index">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
                     <span itemprop="name">dev</span>
                   </a>
                 </span>
@@ -2012,6 +1961,176 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2013/11/30/dangan-ronpa/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2013/11/30/dangan-ronpa/" itemprop="url">
+                  超高校级的荒诞与超高校级的快感
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2013-11-30T00:00:00-05:00">
+                2013-11-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/review/" itemprop="url" rel="index">
+                    <span itemprop="name">review</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/11/30/dangan-ronpa/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2013/11/30/dangan-ronpa/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
+<p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形式是真正的亮点：时间限制造成本能的紧张，配合足够的音乐/视觉冲击，便使简单的射击/节奏gameplay带来强烈的沉浸感。速度感，这也是之前的AVG所忽略的地方。以前在进行文字类解密AVG游戏时也或多或少有这样的感觉：虽然我很想看完后面的剧情展开，但是游戏的节奏感实在太慢了！毕竟传统AVG是以故事性剧情展开为主，动作性并非主要要素，而弹丸论破证明了在推理过程中加入动作性的要素，也许并不是坏事。</p>
+<p>相对于游戏形式的新意，故事性的剧情展开倒是比较苍白…因为论战的展开基本上是一直线，游戏里提供了很多线索所以推理很简单，毕竟过多限制下说得通的真相不会很多，再仔细思考一下游戏里的暗示就能找到它期望引导到的方向。可是游戏时过多的提示/限制就让我怀疑玩家行动是否能对故事造成影响，最后不出意料是单线结局，也就是说在(非)日常篇下的行动只是为了获得降低难度的技能和角色的情报而已。(非)日常篇充当的只是让人物形象更加丰满的作用，毕竟这是了解退场过早的角色的唯一方法了，可是当时我可是苦心积累地搜索了校园的每个角落，用SL看过了各种人物的故事的，至少对于我来说，我期望人际关系的变化能够对故事的展开造成更多的影响。</p>
+<p>当然这样的要求也许过于苛刻了……相比较传统AVG来看，弹丸论破无疑是部反传统的作品：强调推理过程的动作性+苍白的剧情变化；我也明白再多的剧情变化也是不能满足玩家的好奇心的。然而，经历了30小时高度紧张和高度沉浸的一周目后，你是不是还想进行基本是一模一样的二周末呢？</p>
+<p>至少对于追求新鲜感的我，答案不言而喻。</p>
+<p><img src="http://i.imgur.com/A1GLQbJ.jpg" alt=""></p>
+<p>EOF</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
   </section>
 
   
@@ -2061,7 +2180,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">14</span>
+                <span class="site-state-item-count">13</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2071,10 +2190,10 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
             
             
             <div class="site-state-item site-state-categories">
-              
-                <span class="site-state-item-count">4</span>
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
                 <span class="site-state-item-name">categories</span>
-              
+              </a>
             </div>
           
 
@@ -2082,10 +2201,10 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
             
             
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">19</span>
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">tags</span>
-              
+              </a>
             </div>
           
 
@@ -2101,6 +2220,26 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
         
 
         <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/sliz1" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/ziyun_li" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
           
         </div>
 
