@@ -2,8 +2,8 @@
 layout: post
 title: On "Optimizing Node.js"
 date: 2015-10-13 20:24:06
-categories: [dev]
-tags: [cn, javascript, node.js, v8]
+categories: [cn, dev]
+tags: [javascript, node.js, v8]
 ---
 
 前两天我在HN十大上看到了一篇[Node.js调优的小tips](https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e)，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字符（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个[talk](https://youtu.be/FXyM1yrtloc)里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。

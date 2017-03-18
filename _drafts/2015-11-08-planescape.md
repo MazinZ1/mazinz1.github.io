@@ -2,8 +2,8 @@
 layout: post
 title: 2015-11-08 位面风景
 date: 2015-11-08 22:39:21
-categories: [misc]
-tags: [cn, journal]
+categories: [misc, cn]
+tags: [journal]
 
 ---
 

@@ -2,8 +2,8 @@
 layout: post
 title : Latency Numbers Every Programmer Should Know
 date: 2012/12/31
-categories : [dev]
-tags : [cn, system]
+categories : [cn, dev]
+tags : [system]
 ---
 
 本文的灌水动机来自于5天前HN十大的一篇[Latency Numbers Every Programmer Should Know](http://news.ycombinator.com/item?id=4966363),

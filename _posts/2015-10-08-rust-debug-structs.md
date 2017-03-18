@@ -2,8 +2,8 @@
 layout: post
 title: How to Print Rust Structs/Enums
 date: 2015-10-08 23:32:42
-categories: [dev]
-tags: [cn, rust]
+categories: [cn, dev]
+tags: [rust]
 ---
 
 在Rust中定义结构体(`struct`)或枚举(`enum`)类型时，可以在定义前加上属性`#[derive(Debug)]`。这样可以让编译器为该类型自动派生(derive)出`std::fmt::Debug` `trait`的实现。然后在打印时使用`{:?}`则可以打印出变量类型的数据表示。

@@ -2,8 +2,8 @@
 layout: post
 title: "如何在VS2012中创建XNA项目"
 date: 2013/09/14
-categories: [dev]
-tags: [cn, gamedev, xna]
+categories: [cn, dev]
+tags: [gamedev, xna]
 ---
 
 XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……

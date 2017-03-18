@@ -2,8 +2,8 @@
 layout: post
 title : The Last Thing D Needs
 date: 2014/05/28
-categories : [dev]
-tags : [cn, c++]
+categories : [cn, dev]
+tags : [c++]
 ---
 
 

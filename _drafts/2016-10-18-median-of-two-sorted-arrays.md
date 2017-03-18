@@ -2,8 +2,8 @@
 layout: post
 title: Median of Two Sorted Arrays
 date: 2016-10-18 23:52:14
-categories: [dev]
-tags: [cn, leetcode, interview]
+categories: [cn, dev]
+tags: [leetcode, interview]
 ---
 
 编号004，你懂的。

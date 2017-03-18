@@ -2,8 +2,8 @@
 layout: post
 title: "iTunes乱码处理"
 date: 2011/11/19
-categories: [misc]
-tags: [cn, itunes]
+categories: [cn, misc]
+tags: [itunes]
 ---
 
 使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。

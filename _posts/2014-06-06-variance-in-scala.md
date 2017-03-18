@@ -2,8 +2,8 @@
 layout: post
 title: "Variance in Scala"
 date: 2014/06/06
-categories: [dev]
-tags: [en, scala, pl]
+categories: [en, dev]
+tags: [scala]
 ---
 
 This is my note on the variance section in [Coursera Functional Programming in Scala](https://class.coursera.org/progfun-004/lecture/83).

@@ -2,8 +2,8 @@
 layout: post
 title : Scala基本语法与概念笔记
 date: 2014/05/09
-categories : [dev]
-tags : [cn, scala]
+categories : [cn, dev]
+tags : [scala]
 ---
 
 ### Partial application 和 Currying

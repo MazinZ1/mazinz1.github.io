@@ -2,8 +2,8 @@
 layout: post
 title : 超高校级的荒诞与超高校级的快感
 date: 2013/11/30
-categories : [review]
-tags : [cn, game]
+categories : [cn, review]
+tags : [game]
 ---
 
 ![](http://i.imgur.com/fh0ZeuZ.jpg)
