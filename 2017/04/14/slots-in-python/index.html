@@ -89,19 +89,22 @@
 
 
 
-<meta name="description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
-首先，class是解决不了问题">
+<meta name="description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。
+先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
+首先，class是解决不了问">
 <meta property="og:type" content="article">
 <meta property="og:title" content="__slots__ in Python">
 <meta property="og:url" content="http://zettoone.github.io/2017/04/14/slots-in-python/index.html">
 <meta property="og:site_name" content="云麓漫钞">
-<meta property="og:description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
-首先，class是解决不了问题">
+<meta property="og:description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。
+先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
+首先，class是解决不了问">
 <meta property="og:updated_time" content="2017-04-14T04:23:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="__slots__ in Python">
-<meta name="twitter:description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
-首先，class是解决不了问题">
+<meta name="twitter:description" content="今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。
+先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？
+首先，class是解决不了问">
 
 
 
@@ -379,14 +382,22 @@
       
 
       
-        <p>今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。<br>先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？</p>
+        <p>今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。
+先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？</p>
 <p>首先，class是解决不了问题的：默认下，每个class都有一个内建的dict，把attribute names对应到具体的数值，再加上一些别的metadata，class占用的内存会比dict更加多。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">  </div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__)</div></pre></td></tr></table></figure>
-<p><code>collections.namedtuple</code>是大部分人的第一反应，然而和tuple一样，namedtuple的attributes是immutable的。<br>这个差异会给codebase带来不小的改动，而我们都认为这不是一个合适的时间投资。</p>
+<p><code>collections.namedtuple</code>是大部分人的第一反应，然而和tuple一样，namedtuple的attributes是immutable的。
+这个差异会给codebase带来不小的改动，而我们都认为这不是一个合适的时间投资。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> collections</div><div class="line">Rectangle = collections.namedtuple(<span class="string">'Rectangle'</span>, [<span class="string">'top'</span>, <span class="string">'bottom'</span>, <span class="string">'left'</span>, <span class="string">'right'</span>])</div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>) <span class="comment"># AttributeError: can't set attribute</span></div></pre></td></tr></table></figure>
-<p>在我们的代码里面，所有的attributes都是已知的，数量不多，而且我们的代码并没有增减attributes，所以我们最后用了<code>__slots__</code>这个方案。<br>在class内声明<code>__slots__</code>后，该类将不会自动生成<code>__dict__</code>。<br>我们也能对已知的attributes重新赋值。<br>需要注意的是，为了使用<code>__slots__</code>，我们必须让<code>Rectangle</code>继承<code>object</code>。<br>任何<code>Rectangle</code>的派生类都必须重新声明<code>__slots__</code>，否则派生类还是会内建<code>__dict__</code>。</p>
+<p>在我们的代码里面，所有的attributes都是已知的，数量不多，而且我们的代码并没有增减attributes，所以我们最后用了<code>__slots__</code>这个方案。
+在class内声明<code>__slots__</code>后，该类将不会自动生成<code>__dict__</code>。
+我们也能对已知的attributes重新赋值。
+需要注意的是，为了使用<code>__slots__</code>，我们必须让<code>Rectangle</code>继承<code>object</code>。
+任何<code>Rectangle</code>的派生类都必须重新声明<code>__slots__</code>，否则派生类还是会内建<code>__dict__</code>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(object)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line"></div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__) <span class="comment"># AttributeError: 'Rectangle' object has no attribute '__dict__'</span></div><div class="line">print(r.__slots__) <span class="comment"># ('top', 'bottom', 'left', 'right')</span></div><div class="line">print(r.top) <span class="comment"># = 1</span></div><div class="line">r.top = <span class="number">3</span></div></pre></td></tr></table></figure>
-<p>上面的方案存在的最后一个问题是：原代码块内使用的是dict的接口，而我们的类并不兼容这些接口(JS大法好)。<br>所以我们还必须继承<code>MutableMapping</code>，并且实现其所需的方法。<br>这样的话，我们就可以在基本不改动原代码块的情况下，达到我们减少内存使用的目的。</p>
+<p>上面的方案存在的最后一个问题是：原代码块内使用的是dict的接口，而我们的类并不兼容这些接口(JS大法好)。
+所以我们还必须继承<code>MutableMapping</code>，并且实现其所需的方法。
+这样的话，我们就可以在基本不改动原代码块的情况下，达到我们减少内存使用的目的。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(MutableMapping)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">    </div><div class="line">    <span class="comment"># implements MutableMapping</span></div><div class="line">    ...</div></pre></td></tr></table></figure>
 <p>说回来，在Python里面获取instances所占用的内存的方法并不是很trivial，等我多做一些研究后再写一篇归纳。</p>
 

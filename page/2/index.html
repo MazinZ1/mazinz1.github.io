@@ -931,7 +931,8 @@
       
         
           
-            <p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,<br>一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
+            <p>本文的灌水动机来自于5天前HN十大的一篇<a href="http://news.ycombinator.com/item?id=4966363" target="_blank" rel="external">Latency Numbers Every Programmer Should Know</a>,
+一名UCB的学生将计算机系统中的延迟时间(latency time)进行了数据图形化<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">猛击这里</a>. 通过拖动标记年份的滚动条, 我们可以很直观地看到CPU cache, main memory, network上的科技进步对系统延迟时间的影响. 然而看完这幅图, 我不禁有点好奇这些数字的来源, 所以我对其进行了一下小调查.</p>
 <p>虽然说是调查, 但如果有人细心观察过<a href="http://www.eecs.berkeley.edu/~rcs/research/interactive_latency.html" target="_blank" rel="external">页面</a>源代码的话, 其实就能发现作者已经在注释里做了很详细的引用说明了, 所以这篇大抵只是对注释的整理罢了XDDD</p>
 <hr>
 <p>总的来说, 作者用到的数据大部分来自Peter Norvig的<a href="http://norvig.com/21-days.html#answers" target="_blank" rel="external">Teach Yourself Programming in Ten Years</a>和Jeff Dean的<a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/en//people/jeff/Stanford-DL-Nov-2010.pdf" target="_blank" rel="external">Building Software Systems at Google and Lessons Learned</a>, 也算是rule of thumb了.同时, 描述硬件的进步趋势时, 大家都爱用”X年翻一倍”这种描述, 所以计算时也是用了简单的指数函数$latex y = a * b ^ x$.</p>
