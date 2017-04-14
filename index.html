@@ -259,6 +259,350 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2017/04/14/slots-in-python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2017/04/14/slots-in-python/" itemprop="url">
+                  __slots__ in Python
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-14T00:23:39-04:00">
+                2017-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
+                    <span itemprop="name">dev</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/14/slots-in-python/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/04/14/slots-in-python/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。<br>先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？</p>
+<p>首先，class是解决不了问题的：默认下，每个class都有一个内建的dict，把attribute names对应到具体的数值，再加上一些别的metadata，class占用的内存会比dict更加多。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">  </div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__)</div></pre></td></tr></table></figure>
+<p><code>collections.namedtuple</code>是大部分人的第一反应，然而和tuple一样，namedtuple的attributes是immutable的。<br>这个差异会给codebase带来不小的改动，而我们都认为这不是一个合适的时间投资。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> collections</div><div class="line">Rectangle = collections.namedtuple(<span class="string">'Rectangle'</span>, [<span class="string">'top'</span>, <span class="string">'bottom'</span>, <span class="string">'left'</span>, <span class="string">'right'</span>])</div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>) <span class="comment"># AttributeError: can't set attribute</span></div></pre></td></tr></table></figure>
+<p>在我们的代码里面，所有的attributes都是已知的，数量不多，而且我们的代码并没有增减attributes，所以我们最后用了<code>__slots__</code>这个方案。<br>在class内声明<code>__slots__</code>后，该类将不会自动生成<code>__dict__</code>。<br>我们也能对已知的attributes重新赋值。<br>需要注意的是，为了使用<code>__slots__</code>，我们必须让<code>Rectangle</code>继承<code>object</code>。<br>任何<code>Rectangle</code>的派生类都必须重新声明<code>__slots__</code>，否则派生类还是会内建<code>__dict__</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(object)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line"></div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__) <span class="comment"># AttributeError: 'Rectangle' object has no attribute '__dict__'</span></div><div class="line">print(r.__slots__) <span class="comment"># ('top', 'bottom', 'left', 'right')</span></div><div class="line">print(r.top) <span class="comment"># = 1</span></div><div class="line">r.top = <span class="number">3</span></div></pre></td></tr></table></figure>
+<p>上面的方案存在的最后一个问题是：原代码块内使用的是dict的接口，而我们的类并不兼容这些接口(JS大法好)。<br>所以我们还必须继承<code>MutableMapping</code>，并且实现其所需的方法。<br>这样的话，我们就可以在基本不改动原代码块的情况下，达到我们减少内存使用的目的。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(MutableMapping)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">    </div><div class="line">    <span class="comment"># implements MutableMapping</span></div><div class="line">    ...</div></pre></td></tr></table></figure>
+<p>说回来，在Python里面获取instances所占用的内存的方法并不是很trivial，等我多做一些研究后再写一篇归纳。</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2016/10/18/median-of-two-sorted-arrays/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/10/18/median-of-two-sorted-arrays/" itemprop="url">
+                  Median of Two Sorted Arrays
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-18T23:52:14-04:00">
+                2016-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
+                    <span itemprop="name">dev</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/18/median-of-two-sorted-arrays/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/10/18/median-of-two-sorted-arrays/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>编号004，你懂的。</p>
+<p>假设两数列总共的元素数量为偶数2k，中位数则为k和k+1大的两数值的平均值；而当总元素数量为奇数2k+1，中位数则为第k+1大的元素。<br>这题简单的解答方式是实现一个merge函数，将两个已排序的数列合并成一个排序的数列，再根据中位数的定义求出值。<br>我们也还可以做一些基本的优化，例如说我们并不需要最后的排序结果，所以我们只需要维护一个counter，按序读出数字，然后再counter为0时计算中位数。<br>这个方法的时间复杂度是<code>O(n)</code>。</p>
+<p>而如果想进一步达到<code>O(log(m + n))</code>的话，我们可以用分治的思路，定义一个查找两个排序数列中第k大的元素<code>find_kth</code>。<br>与简单的二分法应用有所不同的话，我们这里有两个数列，所以我们需要仔细考虑一下递归时的边界条件。</p>
+<p>假设数组<code>a</code>的长度为<code>m</code>，数组<code>b</code>的长度为<code>n</code>，且<code>m &gt; n &gt;= k/2</code>，那么我们可以用两个变量<code>i</code>和<code>j</code>分别指向两数列中的第<code>k/2</code>个数。<br>如果<code>a[i] == b[j]</code>，那我们就已经找到中位数了；如果<code>a[i] &gt; b[j]</code>，则<code>j</code>所指的元素比<code>a</code>中的<code>k/2</code>个元素都要小，所以<code>b[0:k/2]</code>都不可能存在中位数，因此我们可以只考虑<code>b[k/2+1:]</code>部分；如果<code>a[i] &lt; b[j]</code>则同理，我们只考虑<code>a[k/2+1:]</code>部分。<br>每一次迭代，<code>a</code>和<code>b</code>的总长度都会减少<code>k/2</code><br>之后我们再在剩下的两个数列里寻找第<code>(k - k/2)</code>大的元素。</p>
+<p>接下来我们考虑几个base cases。<br>随着递归过程一直减少的变量分别有：<code>a</code>和<code>b</code>的长度<code>m</code>和<code>n</code>，还有<code>k</code>。<br>假设<code>m &gt; n</code>，那么当<code>n</code>的长度为0时，我们就直接在<code>a</code>里面找第<code>k</code>大的元素。<br>当<code>k = 1</code>时，我们直接看两数列的开头，然后选择较小的一个。</p>
+<p>我们还要考虑边界条件。<br>假设<code>m &gt; n</code>，当<code>n &lt; k/2</code>时，我们最多只能在<code>b</code>中取<code>n</code>个数，而在<code>a</code>中我们要取<code>k - n</code>个数。<br>结合<code>n &gt;= k/2</code>的情况，可知我们在<code>b</code>中取<code>kb = min(k/2, n)</code>，而相应在<code>a</code>中取<code>ka = k - kb</code>。</p>
+<p>最后的Python实现如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">findMedianSortedArrays</span><span class="params">(self, nums1, nums2)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">find_kth</span><span class="params">(k, a, i, b, j)</span>:</span></div><div class="line">        m = len(a) - i</div><div class="line">        n = len(b) - j</div><div class="line">        <span class="keyword">if</span> m &lt; n:</div><div class="line">            <span class="keyword">return</span> find_kth(k, b, j, a, i)</div><div class="line">        <span class="keyword">if</span> n == <span class="number">0</span>:</div><div class="line">            <span class="keyword">return</span> a[i + k - <span class="number">1</span>]</div><div class="line">        <span class="keyword">if</span> k == <span class="number">1</span>:</div><div class="line">            <span class="keyword">return</span> min(a[i], b[j])</div><div class="line"></div><div class="line">        kb = min(k // <span class="number">2</span>, n) <span class="comment"># len(a) &gt;= len(b), therefore ka &gt;= k</span></div><div class="line">        ka = k - kb</div><div class="line">        ma = i + ka - <span class="number">1</span></div><div class="line">        mb = j + kb - <span class="number">1</span></div><div class="line">        <span class="keyword">if</span> a[ma] == b[mb]:</div><div class="line">            <span class="keyword">return</span> a[ma]</div><div class="line">        <span class="keyword">if</span> a[ma] &gt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - kb, a, i, b, j + kb)</div><div class="line">        <span class="keyword">if</span> a[ma] &lt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - ka, a, i + ka, b, j)</div><div class="line"></div><div class="line">    total = len(nums1) + len(nums2)</div><div class="line">    <span class="keyword">if</span> total % <span class="number">2</span> == <span class="number">0</span>:</div><div class="line">        <span class="keyword">return</span> (find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>) +</div><div class="line">                find_kth(total // <span class="number">2</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)) / <span class="number">2.0</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)</div></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2016/03/24/rich-dad-poor-dad/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1768,369 +2112,6 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/05/09/scala-basics/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2014/05/09/scala-basics/" itemprop="url">
-                  Scala基本语法与概念笔记
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-05-09T00:00:00-04:00">
-                2014-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2014/05/09/scala-basics/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/05/09/scala-basics/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="Partial_application_和_Currying">Partial application 和 Currying</h3><p>和大部分函数式语言一样，Scala也支持partial application和currying。在应用函数时，你可以只提供部分的实际参数，而另外一部分参数则使用<code>_</code>来代替，这样会得到另外一个函数。<code>_</code>实际上起到一个匿名通配符 (unnamed wildcard) 的作用。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">adder</span></span>(m: <span class="type">Int</span>, n: <span class="type">Int</span>) = m + n               <span class="comment">//&gt; adder: (m: Int, n: Int)Int</span></div><div class="line"><span class="keyword">val</span> add2 = adder(<span class="number">2</span>, _: <span class="type">Int</span>)                     <span class="comment">//&gt; add2  : Int =&gt; Int = &lt;function1&gt;</span></div><div class="line"><span class="keyword">val</span> add3 = adder(_: <span class="type">Int</span>, <span class="number">3</span>)                     <span class="comment">//&gt; add3  : Int =&gt; Int = &lt;function1&gt;</span></div></pre></td></tr></table></figure>
-<p>而Currying则是说一个函数能够接受多个函数参数列表。从本质上，这样的函数可以通过使一个函数将另外一个函数作为返回值来实现。以下面为例，最外层的函数<code>sum</code>接受一个函数作为参数，并返回<code>sumInternal</code>作为结果。而在<code>sumInternal</code>的实现是依赖于<code>sum</code>的函数参数的。实际调用<code>sum</code>时的例子为<code>sum((x: Int) =&gt; x * x)(0, 2)</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">sum</span></span>(f: <span class="type">Int</span> =&gt; <span class="type">Int</span>): (<span class="type">Int</span>, <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">sumInternal</span></span>(a: <span class="type">Int</span>, b: <span class="type">Int</span>) =&gt; <span class="type">Int</span> = &#123;</div><div class="line">	<span class="keyword">if</span> (a &gt; b) <span class="number">0</span></div><div class="line">	<span class="keyword">else</span> f(a) + sumInternal(a + <span class="number">1</span>, b)</div><div class="line">  &#125;</div><div class="line">  sumInternal</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>按照这个的模式，我们可以用过嵌套定义函数来实现任意多的函数列表，只是略显繁琐。Scala提供了语法糖来简化Currying函数的定义。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">productSum</span></span>(m: <span class="type">Double</span>, x: <span class="type">Double</span>)(n: <span class="type">Double</span>, y: <span class="type">Double</span>) = (m * x) + (n * y)</div></pre></td></tr></table></figure>
-<p>Partial application和Curring也是可以混合使用的。在<code>multiplyTwoSum</code>里我们对<code>productSum</code>两个参数列表都只传入了部分参数，而且得到的结果是<code>(Double, Double) =&gt; Double</code>，即是一个接受两个<code>Double</code>类型参数的函数。注意这和<code>oneMultiplySum</code>的区别：<code>oneMultiplySum</code>接受一个<code>Int</code>类型的参数，并返回一个<code>(Double, Double) =&gt; Double<code>&lt;/code&gt;的函数作为结果。使用Partial application和Curring时，必须仔细观察得到的函数签名。我们也可以对一个partially applied的函数使用</code>curried`方法，得到它的curried版本。</code></p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> multiplyTwoSum = productSum(_: <span class="type">Double</span>, <span class="number">2</span>)(_: <span class="type">Double</span>, <span class="number">2</span>)</div><div class="line">                                              <span class="comment">//&gt; multiplyTwoSum  : (Double, Double) =&gt; Double = &lt;function2&gt;</span></div><div class="line"><span class="keyword">val</span> fourteen = multiplyTwoSum(<span class="number">3</span>, <span class="number">4</span>)             <span class="comment">//&gt; fourteen  : Double = 14.0</span></div><div class="line"><span class="keyword">val</span> oneMultiplySum = productSum(<span class="number">1</span>, _: <span class="type">Int</span>) _    <span class="comment">//&gt; oneMultiplySum  : Int =&gt; ((Double, Double) =&gt; Double) = &lt;function1&gt;</span></div><div class="line"><span class="keyword">val</span> curriedAdder = (adder _).curried            <span class="comment">//&gt; curriedAdder  : Int =&gt; (Int =&gt; Int) = &lt;function1&gt;</span></div><div class="line"><span class="keyword">val</span> five = curriedAdder(<span class="number">2</span>)(<span class="number">3</span>)                   <span class="comment">//&gt; five  : Int = 5</span></div></pre></td></tr></table></figure>
-<h3 id="变长参数_(Variable_length_parameters)">变长参数 (Variable length parameters)</h3><p>Scala支持某个类型的变长参数，只要在函数参数的类型后面加上<code>*</code>就可以了。变长参数的类型是<code>Seq[T]</code>，因此大部分数据结构都能作为实际参数传入这样的函数中。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">capitalizeAll</span></span>(args: <span class="type">String</span>*) = &#123;</div><div class="line">  args.map &#123; arg =&gt; arg.capitalize &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="类_(Classes)">类 (Classes)</h3><p>和Java或者C#不同，Scala里类的构造函数 (constructor) 并不是一个专门的方法 (所以构造函数这个翻译对于Scala的语境来说还挺不合适的，构造器可能更加适合一点？)，而是指类定义里面除去方法定义 (method definitions) 的所有部分。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// classes</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Calculator</span>(<span class="params">val brand: <span class="type">String</span></span>) </span>&#123;</div><div class="line"><span class="comment">//define method with def</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">add</span></span>(m: <span class="type">Double</span>, n: <span class="type">Double</span>) = m + n</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">getBrand</span> </span>= brand</div><div class="line"><span class="comment">// define fields with val (or var)</span></div><div class="line"><span class="keyword">val</span> color: <span class="type">String</span> =</div><div class="line">  <span class="keyword">if</span> (brand == <span class="string">"HP"</span>) &#123;</div><div class="line">    <span class="string">"black"</span></div><div class="line">  &#125; <span class="keyword">else</span> &#123;</div><div class="line">    <span class="string">"white"</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">val</span> hpCalculator = <span class="keyword">new</span> <span class="type">Calculator</span>(<span class="string">"HP"</span>)         <span class="comment">//&gt; hpCalculator  : basics.Calculator = basics$$anonfun$main$1$Calculator$1@664</span></div></pre></td></tr></table></figure>
-<p>抽象类，继承和重载都很正常。对于抽象类里只声明但是没有实现的定义，在实现时直接定义就可以。如果在抽象类里已经实现了的定义，那在子类里重新实现时要求使用<code>override</code>关键字。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// classes</span></div><div class="line"><span class="comment">// Inheritance</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">ScientificCalculator</span>(<span class="params">brand: <span class="type">String</span></span>) <span class="keyword">extends</span> <span class="title">Calculator</span>(<span class="params">brand</span>) </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">log</span></span>(m: <span class="type">Double</span>, base: <span class="type">Double</span>) = math.log(m) / math.log(base)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// overloading methods</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">AdvancedScientificCalculator</span>(<span class="params">brand: <span class="type">String</span></span>) <span class="keyword">extends</span> <span class="title">ScientificCalculator</span>(<span class="params">brand</span>) </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">log</span></span>(m: <span class="type">Int</span>): <span class="type">Double</span> = log(m, math.exp(<span class="number">1</span>))</div><div class="line">  <span class="keyword">override</span> <span class="keyword">val</span> color: <span class="type">String</span> = <span class="string">"Golden"</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// abstract classes; no implementation; can't create instances from abstract class</span></div><div class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Shape</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">getArea</span></span>(): <span class="type">Int</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="Traits">Traits</h3><p>Traits定义了一系列的数据和方法，并且可以用来扩展或者mixin在你的类定义中。Traits和抽象类的特点和使用范围都有很相似的地方，所以选择的时候需要考虑它们不同的特点。一个类能够扩展多个traits，但是只能扩展一个父类。而traits并不能接受构造参数，而抽象类可以。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Car</span> </span>&#123;</div><div class="line">  <span class="keyword">val</span> brand: <span class="type">String</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Sport</span> </span>&#123;</div><div class="line">  <span class="keyword">val</span> <span class="type">Engine</span>: <span class="type">String</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">BMW</span> <span class="keyword">extends</span> <span class="title">Car</span> <span class="keyword">with</span> <span class="title">Sport</span> </span>&#123;</div><div class="line">  <span class="keyword">val</span> brand = <span class="string">"BWM"</span></div><div class="line">  <span class="keyword">val</span> <span class="type">Engine</span> = <span class="string">"Turbo"</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="类型参数">类型参数</h3><p>定义类，函数，和traits时，都可以通过方括号<code>[]</code>引入类型参数。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Cache</span>[<span class="type">K</span>, <span class="type">V</span>] </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">get</span></span>(key: <span class="type">K</span>): <span class="type">V</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">put</span></span>(key: <span class="type">K</span>, value: <span class="type">V</span>)</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">delete</span></span>(key: <span class="type">K</span>)</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">remove</span></span>[<span class="type">K</span>](key: <span class="type">K</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="apply_方法">apply 方法</h3><p>Scala可以让你为类或者对象定义<code>apply</code>方法，来重载<code>()</code>运算符。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Foo</span> </span>&#123;&#125;</div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">FooMaker</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>() = <span class="keyword">new</span> <span class="type">Foo</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">val</span> newFoo = <span class="type">FooMaker</span>()</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Bar</span> </span>&#123;</div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>() = <span class="number">0</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">val</span> bar = <span class="keyword">new</span> <span class="type">Bar</span></div><div class="line">bar()                                           <span class="comment">//&gt; res0: Int = 0</span></div></pre></td></tr></table></figure>
-<p>Scala里面类和对象能够使用同一个名称。所以通常我们会为一个类定义一个同名的对象 (companion object)，作为该类型的factories。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DummyClass</span>(<span class="params">val foo: <span class="type">String</span></span>) </span>&#123;</div><div class="line">&#125;</div><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">DummyClass</span> </span>&#123; <span class="comment">// Classes and Objects can have the same name.</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(foo: <span class="type">String</span>) = <span class="keyword">new</span> <span class="type">DummyClass</span>(foo)</div><div class="line">&#125;</div><div class="line"><span class="keyword">val</span> c = <span class="type">DummyClass</span>(<span class="string">"foo"</span>)                                          <span class="comment">//&gt; res0: Int = 0</span></div></pre></td></tr></table></figure>
-<h3 id="函数即对象">函数即对象</h3><p>Scala里面的函数其实是一系列traits的集合。以一个<code>Int =&gt; Int</code>类型的函数为例，它扩展了<code>Function1[Int, Int]</code>这个trait。而且这个trait定义了<code>apply</code>函数，因为你可以用调用函数的语法来使用这个对象。实际上，Scala的提供了语法糖，让用户可以用<code>Int =&gt; Int</code>来表示<code>Function1[Int, Int]</code>。</p>
-<p>注意这里的函数并不包括类里面定义的方法。</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">object</span> <span class="title">addOne</span> <span class="keyword">extends</span> <span class="title">Function1</span>[<span class="type">Int</span>, <span class="type">Int</span>] </span>&#123;  <span class="comment">// can be class AddOne extends (Int =&gt; Int)</span></div><div class="line">  <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(m: <span class="type">Int</span>): <span class="type">Int</span> = m + <span class="number">1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>EOF</p>
-<hr>
-<h2 id="Reference">Reference</h2><ul>
-<li><a href="http://twitter.github.io/scala_school/" target="_blank" rel="external">Twitter Scala School</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2013/11/30/dangan-ronpa/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2013/11/30/dangan-ronpa/" itemprop="url">
-                  超高校级的荒诞与超高校级的快感
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2013-11-30T00:00:00-05:00">
-                2013-11-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/review/" itemprop="url" rel="index">
-                    <span itemprop="name">review</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2013/11/30/dangan-ronpa/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2013/11/30/dangan-ronpa/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://i.imgur.com/fh0ZeuZ.jpg" alt=""></p>
-<p>开始游戏的前15分钟，我就彻底被游戏的设定吓到了：这么乱来也可以的啊……然而之后的三天将近30小时的一周目后，我想也不必拘泥超高校级的荒诞设定和结局，因为论战形式是真正的亮点：时间限制造成本能的紧张，配合足够的音乐/视觉冲击，便使简单的射击/节奏gameplay带来强烈的沉浸感。速度感，这也是之前的AVG所忽略的地方。以前在进行文字类解密AVG游戏时也或多或少有这样的感觉：虽然我很想看完后面的剧情展开，但是游戏的节奏感实在太慢了！毕竟传统AVG是以故事性剧情展开为主，动作性并非主要要素，而弹丸论破证明了在推理过程中加入动作性的要素，也许并不是坏事。</p>
-<p>相对于游戏形式的新意，故事性的剧情展开倒是比较苍白…因为论战的展开基本上是一直线，游戏里提供了很多线索所以推理很简单，毕竟过多限制下说得通的真相不会很多，再仔细思考一下游戏里的暗示就能找到它期望引导到的方向。可是游戏时过多的提示/限制就让我怀疑玩家行动是否能对故事造成影响，最后不出意料是单线结局，也就是说在(非)日常篇下的行动只是为了获得降低难度的技能和角色的情报而已。(非)日常篇充当的只是让人物形象更加丰满的作用，毕竟这是了解退场过早的角色的唯一方法了，可是当时我可是苦心积累地搜索了校园的每个角落，用SL看过了各种人物的故事的，至少对于我来说，我期望人际关系的变化能够对故事的展开造成更多的影响。</p>
-<p>当然这样的要求也许过于苛刻了……相比较传统AVG来看，弹丸论破无疑是部反传统的作品：强调推理过程的动作性+苍白的剧情变化；我也明白再多的剧情变化也是不能满足玩家的好奇心的。然而，经历了30小时高度紧张和高度沉浸的一周目后，你是不是还想进行基本是一模一样的二周末呢？</p>
-<p>至少对于追求新鲜感的我，答案不言而喻。</p>
-<p><img src="http://i.imgur.com/A1GLQbJ.jpg" alt=""></p>
-<p>EOF</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -2180,7 +2161,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">15</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2202,7 +2183,7 @@ sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">17</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
