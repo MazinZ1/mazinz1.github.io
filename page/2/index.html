@@ -259,6 +259,183 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/05/17/nvm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2014/05/17/nvm/" itemprop="url">
+                  使用NVM管理Node.js
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-05-17T00:00:00-04:00">
+                2014-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
+                    <span itemprop="name">dev</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2014/05/17/nvm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/05/17/nvm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
+</code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code>nvm install <span class="number">0.10</span><span class="number">.28</span>
+nvm use <span class="number">0.10</span><span class="number">.28</span>
+nvm alias <span class="keyword">default</span> <span class="number">0.10</span><span class="number">.28</span>
+</code></pre><h2 id="使所有用户共用同一个Node-js版本">使所有用户共用同一个Node.js版本</h2><pre><code>n=<span class="variable">$(</span>which node);
+n=<span class="variable">${</span>n<span class="string">%/bin/</span>node};
+chmod -<span class="constant">R</span> <span class="number">755</span> <span class="variable">$n</span>/bin/*;
+sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class="keyword">lib</span>,<span class="title">share</span>} /<span class="title">usr</span>/<span class="title">local</span></span>
+</code></pre><p>NVM默认把Node.js安装到用户的Home目录下。为了使所有用户都能使用同一份Node.js的，上述命令会把当前激活的Node.js复制到<code>/usr/local/bin</code>目录下,并把权限设置成所有用户都能访问。如果你之后激活了另外一个版本(<code>nvm use vXX.XX.XX</code>)并向让它成为全局的Node.js版本，那只需要重新执行一遍上面的命令。</p>
+<p>EOF</p>
+<hr>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="https://www.digitalocean.com/community/articles/how-to-install-node-js-with-nvm-node-version-manager-on-a-vps" target="_blank" rel="external">How To Install Node.js with NVM (Node Version Manager) on a VPS</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/05/09/scala-basics/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1236,7 +1413,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">15</span>
+                <span class="site-state-item-count">16</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -1258,7 +1435,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
