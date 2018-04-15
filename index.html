@@ -259,556 +259,6 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2017/04/19/downside-of-aws-lambda/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/04/19/downside-of-aws-lambda/" itemprop="url">
-                  AWS Lambda的潜在问题
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-19T22:23:36-04:00">
-                2017-04-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/04/19/downside-of-aws-lambda/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/04/19/downside-of-aws-lambda/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>AWS Lambda是2016年业内一大热点和Amazon主要发展对象，它的优点和适用环境估计大家也都听过了，所以这里了就略过不提。
-但是我发现，它的价格模型往往是大家不了解的，而它的潜在cost其实远比大家想象中的高。
-这里简单计算一下它的开销。</p>
-<p>Amazon在<a href="https://aws.amazon.com/lambda/pricing" target="_blank" rel="external">这里</a>列出了Lambda的价格模型和几个例子。
-我们可以主要看看Pricing Example 1: 每个月3M的requests，每个月有<code>365/12=30.4</code>天，每天有86400秒，折算下来每秒大约是1.14个requests。
-其实这是很小请求量了。
-假如我们每秒要100个requests的话，每个月的requests就有262.656M。
-假设如原例子，我们使用512MB的内存，每个request执行1s，每GB-s的花费为$0.00001667，那么我们每个月将会有131.328M GB-s，计算的开销则为<code>(131.328M-0.4M) * $0.00001667 = $2182</code>。
-再加上request的花费<code>(262.656M-1M) * $0.2/M = $52.5</code>。
-一个月要花超过$2200。</p>
-<p>相比之下，t2.nano每月的费用为$4.75，即使为了应对spiky requests的情况，我们需要10台，每个月的花销也不过是不到$50。
-而且现实中，我们往往可以用过autoscaling来进一步节省成本。</p>
-<p>当然，使用Lambda的话可以让开发者免去架设EC2/EBS和各种维护的问题。
-今时今日的Web开发工具繁多，需要找到合适的人来处理container, logging, provision, deployment，也不是一个非常低成本的方案。
-但是从上面的计算可以看出，当scale上去了后，Lambda的成本其实是非常高的。
-如何计算自己的需求，找到合适的breakpoint非常重要。</p>
-<p>我现在的想法是，Lambda比较合适项目刚开始bootstraping的阶段，毕竟这个时候，你的用户量小，而且Lambda低维护的优点可以让你专注于产品方面。
-而当请求数量比较高，而且每个请求比较复杂需要一定的计算量时，也许就应该考虑迁移到EC2了。
-基于这点，我比较倾向于使用Zappa这样的框架：你可以使用Django这样的成熟框架进行开发，并通过Zappa迅速部署到Lambda，而当Lambda的成本太高时，你可以直接把Django的部分剥离出来，尝试部署到EC2上。</p>
-<p>最后再提一下一个小细节：AWS Account在一个region里其实是有<a href="http://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html" target="_blank" rel="external">concurrent execution limits</a>的。
-如果你把所有的Lambda都部署在同一个region的同一个账号，而你对某个Lambda发出了过多的requests，那么剩下的所有Lambdas都会被瘫痪掉。
-这其实非常无语，因为你有可能不小心会把自己的整个Lambda系统给DDos掉，而你又没有自动化的方式可以解决。
-至今Amazon还没有给出太好的方案，只能自己想办法workaround，这不经意又增加了部署和维护的麻烦程度。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2017/04/14/slots-in-python/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2017/04/14/slots-in-python/" itemprop="url">
-                  __slots__ in Python
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-14T00:23:39-04:00">
-                2017-04-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/04/14/slots-in-python/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2017/04/14/slots-in-python/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今天在公司内部交流会上聊到了我们Python后端代码中的一个小问题：在一小段代码中，我们遍历了所有的”item”，然后选了一个ID，把每个”item”都塞进了一个dict里面。
-先不论这段代码的具体功能，光从实现来说当初的设计咋一看没有太大的问题，但是现在，我们客户数据库里面动不动就能翻出上千个”item”时，这段代码带来了不小的内存开销，而我们能怎么改善这个情况呢？</p>
-<p>首先，class是解决不了问题的：默认下，每个class都有一个内建的dict，把attribute names对应到具体的数值，再加上一些别的metadata，class占用的内存会比dict更加多。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">  </div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__)</div></pre></td></tr></table></figure>
-<p><code>collections.namedtuple</code>是大部分人的第一反应，然而和tuple一样，namedtuple的attributes是immutable的。
-这个差异会给codebase带来不小的改动，而我们都认为这不是一个合适的时间投资。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> collections</div><div class="line">Rectangle = collections.namedtuple(<span class="string">'Rectangle'</span>, [<span class="string">'top'</span>, <span class="string">'bottom'</span>, <span class="string">'left'</span>, <span class="string">'right'</span>])</div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>) <span class="comment"># AttributeError: can't set attribute</span></div></pre></td></tr></table></figure>
-<p>在我们的代码里面，所有的attributes都是已知的，数量不多，而且我们的代码并没有增减attributes，所以我们最后用了<code>__slots__</code>这个方案。
-在class内声明<code>__slots__</code>后，该类将不会自动生成<code>__dict__</code>。
-我们也能对已知的attributes重新赋值。
-需要注意的是，为了使用<code>__slots__</code>，我们必须让<code>Rectangle</code>继承<code>object</code>。
-任何<code>Rectangle</code>的派生类都必须重新声明<code>__slots__</code>，否则派生类还是会内建<code>__dict__</code>。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(object)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line"></div><div class="line">r = Rectangle(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</div><div class="line">print(r.__dict__) <span class="comment"># AttributeError: 'Rectangle' object has no attribute '__dict__'</span></div><div class="line">print(r.__slots__) <span class="comment"># ('top', 'bottom', 'left', 'right')</span></div><div class="line">print(r.top) <span class="comment"># = 1</span></div><div class="line">r.top = <span class="number">3</span></div></pre></td></tr></table></figure>
-<p>上面的方案存在的最后一个问题是：原代码块内使用的是dict的接口，而我们的类并不兼容这些接口(JS大法好)。
-所以我们还必须继承<code>MutableMapping</code>，并且实现其所需的方法。
-这样的话，我们就可以在基本不改动原代码块的情况下，达到我们减少内存使用的目的。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Rectangle</span><span class="params">(MutableMapping)</span>:</span></div><div class="line">    __slots__ = (<span class="string">'top'</span>,<span class="string">'bottom'</span>,<span class="string">'left'</span>, <span class="string">'right'</span>)</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, top, bottom, left, right)</span>:</span></div><div class="line">      self.top = top</div><div class="line">      self.bottom = bottom</div><div class="line">      self.left = left</div><div class="line">      self.right = right</div><div class="line">    </div><div class="line">    <span class="comment"># implements MutableMapping</span></div><div class="line">    ...</div></pre></td></tr></table></figure>
-<p>说回来，在Python里面获取instances所占用的内存的方法并不是很trivial，等我多做一些研究后再写一篇归纳。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2016/10/18/median-of-two-sorted-arrays/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/10/18/median-of-two-sorted-arrays/" itemprop="url">
-                  Median of Two Sorted Arrays
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-18T23:52:14-04:00">
-                2016-10-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/10/18/median-of-two-sorted-arrays/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2016/10/18/median-of-two-sorted-arrays/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>编号004，你懂的。</p>
-<p>假设两数列总共的元素数量为偶数2k，中位数则为k和k+1大的两数值的平均值；而当总元素数量为奇数2k+1，中位数则为第k+1大的元素。
-这题简单的解答方式是实现一个merge函数，将两个已排序的数列合并成一个排序的数列，再根据中位数的定义求出值。
-我们也还可以做一些基本的优化，例如说我们并不需要最后的排序结果，所以我们只需要维护一个counter，按序读出数字，然后再counter为0时计算中位数。
-这个方法的时间复杂度是<code>O(n)</code>。</p>
-<p>而如果想进一步达到<code>O(log(m + n))</code>的话，我们可以用分治的思路，定义一个查找两个排序数列中第k大的元素<code>find_kth</code>。
-与简单的二分法应用有所不同的话，我们这里有两个数列，所以我们需要仔细考虑一下递归时的边界条件。</p>
-<p>假设数组<code>a</code>的长度为<code>m</code>，数组<code>b</code>的长度为<code>n</code>，且<code>m &gt; n &gt;= k/2</code>，那么我们可以用两个变量<code>i</code>和<code>j</code>分别指向两数列中的第<code>k/2</code>个数。
-如果<code>a[i] == b[j]</code>，那我们就已经找到中位数了；如果<code>a[i] &gt; b[j]</code>，则<code>j</code>所指的元素比<code>a</code>中的<code>k/2</code>个元素都要小，所以<code>b[0:k/2]</code>都不可能存在中位数，因此我们可以只考虑<code>b[k/2+1:]</code>部分；如果<code>a[i] &lt; b[j]</code>则同理，我们只考虑<code>a[k/2+1:]</code>部分。
-每一次迭代，<code>a</code>和<code>b</code>的总长度都会减少<code>k/2</code>
-之后我们再在剩下的两个数列里寻找第<code>(k - k/2)</code>大的元素。</p>
-<p>接下来我们考虑几个base cases。
-随着递归过程一直减少的变量分别有：<code>a</code>和<code>b</code>的长度<code>m</code>和<code>n</code>，还有<code>k</code>。
-假设<code>m &gt; n</code>，那么当<code>n</code>的长度为0时，我们就直接在<code>a</code>里面找第<code>k</code>大的元素。
-当<code>k = 1</code>时，我们直接看两数列的开头，然后选择较小的一个。</p>
-<p>我们还要考虑边界条件。
-假设<code>m &gt; n</code>，当<code>n &lt; k/2</code>时，我们最多只能在<code>b</code>中取<code>n</code>个数，而在<code>a</code>中我们要取<code>k - n</code>个数。
-结合<code>n &gt;= k/2</code>的情况，可知我们在<code>b</code>中取<code>kb = min(k/2, n)</code>，而相应在<code>a</code>中取<code>ka = k - kb</code>。</p>
-<p>最后的Python实现如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">findMedianSortedArrays</span><span class="params">(self, nums1, nums2)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">find_kth</span><span class="params">(k, a, i, b, j)</span>:</span></div><div class="line">        m = len(a) - i</div><div class="line">        n = len(b) - j</div><div class="line">        <span class="keyword">if</span> m &lt; n:</div><div class="line">            <span class="keyword">return</span> find_kth(k, b, j, a, i)</div><div class="line">        <span class="keyword">if</span> n == <span class="number">0</span>:</div><div class="line">            <span class="keyword">return</span> a[i + k - <span class="number">1</span>]</div><div class="line">        <span class="keyword">if</span> k == <span class="number">1</span>:</div><div class="line">            <span class="keyword">return</span> min(a[i], b[j])</div><div class="line"></div><div class="line">        kb = min(k // <span class="number">2</span>, n) <span class="comment"># len(a) &gt;= len(b), therefore ka &gt;= k</span></div><div class="line">        ka = k - kb</div><div class="line">        ma = i + ka - <span class="number">1</span></div><div class="line">        mb = j + kb - <span class="number">1</span></div><div class="line">        <span class="keyword">if</span> a[ma] == b[mb]:</div><div class="line">            <span class="keyword">return</span> a[ma]</div><div class="line">        <span class="keyword">if</span> a[ma] &gt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - kb, a, i, b, j + kb)</div><div class="line">        <span class="keyword">if</span> a[ma] &lt; b[mb]:</div><div class="line">            <span class="keyword">return</span> find_kth(k - ka, a, i + ka, b, j)</div><div class="line"></div><div class="line">    total = len(nums1) + len(nums2)</div><div class="line">    <span class="keyword">if</span> total % <span class="number">2</span> == <span class="number">0</span>:</div><div class="line">        <span class="keyword">return</span> (find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>) +</div><div class="line">                find_kth(total // <span class="number">2</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)) / <span class="number">2.0</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> find_kth(total // <span class="number">2</span> + <span class="number">1</span>, nums1, <span class="number">0</span>, nums2, <span class="number">0</span>)</div></pre></td></tr></table></figure>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
     <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2016/03/24/rich-dad-poor-dad/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -933,345 +383,6 @@
 <p>对于我自己来说，感触最大的就是“人应该区分清楚自己的职业和自己的事业”。出来工作一年多了，其实很多发现自己作为一个初级工程师，参加一个产品的开发，而能够产生影响的方面其实很有限。你没有办法直接了解客户的需要，因为这是产品经理的工作。你没有办法决定技术的选型，因为这是项目架构师的工作。即使你有个非常合理的想法希望在项目里面推广，而且你也说服了团队里的所有资深工程师，你也未必能够成功：因为项目有着自己technical debt，而实现你的想法也许需要投资很多的时间人力资源，而可能是你的团队没有办法做到的。从某个程度上来说，工程师也不过是个士兵。指挥官下令冲锋时你只能埋下头向前跑。举起枪发现没有校准，向前冲了发现方向不对，战局不利然后被大部分放弃，这一切一切你都只能抱怨却又无法改变。而即使胜利了，你又获得了什么？</p>
 <p>想到这里我已经明白了，为公司工作只是我的一个职业，为生计所迫也并无他法。可是这终究不是我自己真正的追求。那我自己到底想追求什么？其实我现在也并不知道。但是我明白，为了能够做我自己自己的事业，我至少应该为起步进行准备：资金，知识，技术和团队。这也是书中所说的：学会理财和能力积累。明白了道理就自然会为了需要而奋斗。被困在自己的职业里为他人的事业工作，一步步慢慢地腐烂并被淘汰，实在是一件很可怕的事情。</p>
 <p>书中给我的另外一个启发就是，人必须全面。我其实心里也明白自己常陷于职业程序员的一个常见思想误区：为了进步我只能在技术上一直精益求精。在技术上有自己的追求，本应不是坏事。然而过于专注在一个点的结果就是紧盯着细节，却忘记了大局。首先技术成长不过是职业发展中的一个方面；其次是职业发展也只是人生中的一个重要方面。回想起这些年读过的硅谷轶事，大多是天才怪客的成功史，宣扬的观念都是只要技术好nerd也能成功。可是工作之后发现，软件工程不过也是和人打交道的社会工程。聪明很重要，但是这并不完全是工作中的所有要素。相反，因为优秀的工程师往往左脑发达，导致其实工作上非常的egocentric，这样的人往往很难合作。学会从自己专注的领域走出来，学学没难度的理财，练练没意思的人际交往，听听没逻辑的人的想法，自己的心象风景其实会大有不同。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2015/12/27/her-story/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/12/27/her-story/" itemprop="url">
-                  Her Story
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-12-27T00:00:00-05:00">
-                2015-12-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/review/" itemprop="url" rel="index">
-                    <span itemprop="name">review</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/12/27/her-story/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/12/27/her-story/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>今年开始工作后，玩游戏的时间一直不多，完结的游戏更是寥寥无几。好不容易才趁圣诞假期赶在年底前，把暑假推出的Her Story(<a href="http://www.polygon.com/2015/6/22/8825813/her-story-review-mac-windows-pc" target="_blank" rel="external">Polygon评分8.5</a>，<a href="http://www.polygon.com/a/game-of-the-year-2015/her-story-game-of-the-year-2015-polygon" target="_blank" rel="external">年度游戏第一</a>)给通关了。这次我并不准备谈内容和剧情，而是想聊聊游戏别的方面。</p>
-<p>通关之后再回头看看，其实会觉得游戏的主要元素非常简单甚至无趣：一段总长度一个多小时，跨越了游戏内7次口供的，由（非专业演员出身的）Viva Seifert出演的，面对警察录下的口供独白。而游戏的定睛之笔正是对这段口供的非线性处理：视频被切割成短至数秒长至一分钟的短片，而玩家需要通过数据库控制台输入关键字以检索视频。如果非要说这游戏有任何mechanics的话，估计就只能是这个检索环节了：你必须用关键字来“google”短片，从里面寻找相关的线索也即是关键字，并用来继续挖掘相关的短片。关键字检索的设计有效地分割开了时间线，例如说检索”body”时，玩家得到的前5个短片很有可能是出现于不同的口供中的；而且很多时候因为缺少上下文和缺少警察的问题，玩家听完短片独白后会觉得不知所云，而只能通过利用独白内新出现的关键字来继续检索。默认情况下，控制台最多会返回5个短片，这样有效制止了玩家输入一个非常general的单词来检索出一大片视频。</p>
-<p>虽然听起来很简单，但是这个玩法却是惊人地有趣：你会翻来覆去地看每一个手中的短片，尝试寻找里面任何有意义的关键字，然后尝试往一个推理的方向发掘下去。更好玩的是，在挖掘的过程中你常常会遇到一些意料之外而且看起来非常重要的线索，以至于你会马上开始搜索这个新关键字。这种有意无意中对玩家的干扰使得你在“侦探”的过程中很容易跳入一个接一个的rabbit hole，完全打乱了你开始推理的方向。而且Her Story并没有别的推理游戏里常见的“玩家友好”设计，游戏系统内自动记录关键字，允许回放台词文本，解锁视频短片库之类的功能是一律欠奉。这对玩家的记忆力和观察力是很大的挑战，以我自己来说吧，玩通流程时就写了4页的笔记来记录对白里提到的关键字和小细节。然而这样不友好的设计却恰好让玩家更加投入了，至少对我来说，这些年来陆陆续续玩过的推理向文字游戏中这好像是唯一一个需要我拿出纸笔，像做英语听力题一样来记录关键字，还有画时间图和人物关系图来解决谜团的了。因为视频的内容只有女主人公的独白，并没有录下警方的提问，所以你只能从女主人公的回答中来猜测警方的问题，从而揣摩警方态度的变化。在游戏过程中，游戏也并没有为玩家提供推理方向的提示。这种不人道的方式，其实反而给了玩家很大的想象和推理空间。而游戏对玩家的褒奖，也只有玩家在发现自己的推理在某一段短片中获得确认时的成就感，然而这刻获得的侦探实感可是甜美得无与伦比。</p>
-<p>当然，这种（过于）简单的游戏设计也会有比较鬼畜的地方。当（估计是第七次口供的短片解锁）进行到一定的进度后，系统会提示可以Log Off了。如果选择Log Off就会进入Credits环节，算是一周目通关了。在这个时候，玩家其实大概也会对故事内容知道了个大概，也隐隐约约明白了故事里面人物的关系和其中的纠结，但是玩家还是有很多missing pieces，很难把整个故事联系起来。这个时候，就进入比较蛋疼的视频收集环节了……正如前面所说，游戏并没有提供简单检索已解锁短片的方式，也没有提供线性播放已解锁短片的方式。游戏遮遮掩掩提供的DB Checker也只是让玩家大概知道收集度，也没有提供任何有用的短信信息，例如短片编号，截图，日期等等。所以要完满收集，漫长的试错过程是逃不掉的。为了明白故事里的所有细节，我是硬着头皮挖了100%，其中的辛酸就不细说了，测谎器那里玩过的同志都懂的……而到最后终于挖出100%了，你会发现然并卵：游戏到最后也留给了玩家足够的空间去想象，去解释游戏的细节和结局。</p>
-<p>是的，这个游戏吸引人的地方也许就是从始到终都给予玩家的自由。你并不需要在侦破下一个案件前和NPC闲聊30分钟的家常。你并不需要在几个场景间穿梭来触发新的故事情节。你并不需要在点击场景里任何长得像道具的物体来尝试获得剧情需要的主要物品。你并不需要忍受剧本作者不时插入的冷笑话。</p>
-<p>是的，游戏的剧本最后还是决定好的，你根本无法左右里面的人事情。可是你获得了解释和想象这份暧昧不清的剧本的自由。你只需要想象，在已知的线索前想象出故事中的真相，然后想出一个个关键字键入检索，看看它们会把你到底故事的何方。直到某个时候，你决定停下来，把手中的线索联系起来，构建出你对这个事件的解释。Her Story简单的设计下面，反而给玩家从想象力的枷锁解脱，达到了平常推理小说/游戏无法企及的交互体验。可这是能够复制的游戏机制么？我觉得很难。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2015/10/13/optimizing-javascript/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2015/10/13/optimizing-javascript/" itemprop="url">
-                  On "Optimizing Node.js"
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2015-10-13T20:24:06-04:00">
-                2015-10-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/" itemprop="url" rel="index">
-                    <span itemprop="name">cn</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2015/10/13/optimizing-javascript/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2015/10/13/optimizing-javascript/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>前两天我在HN十大上看到了一篇<a href="https://medium.com/@c2c/nodejs-a-quick-optimization-advice-7353b820c92e" target="_blank" rel="external">Node.js调优的小tips</a>，大抵内容是“如果你有一个经常被调用的函数或者回调，你应该尝试把它缩短到600字符（包括空格）以下，这样v8就会尝试把该函数inline作为优化”。这个小技巧我之前其实在dotJS的一个<a href="https://youtu.be/FXyM1yrtloc" target="_blank" rel="external">talk</a>里也听说过，虽然听起来很美，但是我觉得使用之前还是要明白这背后的一些细节。</p>
-<p>首先，文章或者talk里的观点都是“v8会自动inline源代码字符数在600以下的函数”，然而实际上更准确的说法应该是“v8绝对不会inline源代码字符数达到600的函数”。而且，源代码字符数并不是唯一的拒绝条件；即使在600字符以下，v8也有可能选择不将其inline。例如说，v8并不会inline超过196个AST节点的函数；而且在一个单独函数里，总计只能有196个AST节点能够被inlined[<a href="http://jayconrod.com/posts/54/a-tour-of-v8-crankshaft-the-optimizing-compiler" target="_blank" rel="external">1</a>]。具体例子可见<a href="https://chromium.googlesource.com/v8/v8.git/+/master/src/hydrogen.cc#8280" target="_blank" rel="external">代码</a>。在实际场景中应用这个技巧的话，效果可能并没有上面的hello world例子来得显著。</p>
-<p>不过既然v8提供了优化可能性，我们也是可以尽量尝试利用的。前端的JS代码一般发布前都会minified，所以已经利用了v8的这个优化可能性。需要注意的主要是用JS写的后端，也就是Node.js的代码。因为v8计算函数源代码时是包含了注释和空格的，所以把部分长注释移出函数之外也许是个不错的主意。这里插个题外话，也许会有同学想为什么v8不能直接把注释都去掉呢，这里有两个原因：其一是600字符数这个heuristic原本就是为了避免parse/tokenize过长的函数造成太大开销；其二是不少JS的代码都用了一些通过注释和<code>Function.prototype.toString()</code>来实现多行字符串(multiline string literal)的诡异技巧[<a href="https://news.ycombinator.com/item?id=10375297" target="_blank" rel="external">2</a>]，例如下面来自[<a href="http://tomasz.janczuk.org/2013/05/multi-line-strings-in-javascript-and.html" target="_blank" rel="external">3</a>]的例子。因为这样的用例，注释不是说想去掉就去掉的……</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> html = (<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;<span class="comment">/*  </span></div><div class="line">  &lt;!DOCTYPE html&gt;  </div><div class="line">  &lt;html&gt;  </div><div class="line">    &lt;body&gt;  </div><div class="line">      &lt;h1&gt;Hello, world!&lt;/h1&gt;  </div><div class="line">    &lt;/body&gt;  </div><div class="line">  &lt;/html&gt;          </div><div class="line">*/&#125;).toString().match(<span class="regexp">/[^]*\/\*([^]*)\*\/\&#125;$/</span>)[<span class="number">1</span>];</div></pre></td></tr></table></figure>
-<p>从相关的这个<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，这个600字符数的heuristic是不会在<code>Crankshaft</code>版本被修复了，但是下一代<code>TurboFan</code>应该会使用更准确的AST节点信息来计算是否inline的heuristic。另外文章和talk都提到了使用<code>max_inlined_source_size</code>来改变默认的600字符数限制，个人觉得进行这样的hacky调优时，还是需要结合benchmark。而且从<a href="https://code.google.com/p/v8/issues/detail?id=3354" target="_blank" rel="external">issue</a>来看，随意调大字符数限制并不一定会获得性能的提升。</p>
-<p>其实除了在v8上面调优，我们还有很多别的优化机会，例如说mraleph提到<code>for (let x ...)</code>一般会比<code>for (var x ...)</code>慢上三倍[<a href="https://twitter.com/mraleph/status/653708835320922112" target="_blank" rel="external">3</a>]……如果你非要用<code>let</code>不可的话，你至少应该把<code>let</code>移到<code>for()</code>之外。</p>
-<p>所以说，JS大法好！</p>
 
           
         
@@ -1655,7 +766,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/06/06/variance-in-scala/">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/05/17/nvm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="某雲">
@@ -1677,8 +788,8 @@
             
               
                 
-                <a class="post-title-link" href="/2014/06/06/variance-in-scala/" itemprop="url">
-                  Variance in Scala
+                <a class="post-title-link" href="/2014/05/17/nvm/" itemprop="url">
+                  使用NVM管理Node.js
                 </a>
               
             
@@ -1694,226 +805,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-06-06T00:00:00-04:00">
-                2014-06-06
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/en/" itemprop="url" rel="index">
-                    <span itemprop="name">en</span>
-                  </a>
-                </span>
-
-                
-                
-                  , 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/en/dev/" itemprop="url" rel="index">
-                    <span itemprop="name">dev</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2014/06/06/variance-in-scala/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/06/06/variance-in-scala/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>This is my note on the variance section in <a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a>.</p>
-<p>Scala supports two forms of polymorphism: <em>sub-typing</em> and <em>generics</em>. Not only does the type system needs to deal with both of them independently, it also needs to correctly resolve their interactions. </p>
-<h2 id="Type_Bounds">Type Bounds</h2><p>In order to express the sub-typing relationship between type parameters, we need to introduce the concept of <em>type bounds</em>:</p>
-<ul>
-<li>Upper bound: S &lt;: T means S is a <em>sub-type</em> of T,</li>
-<li>Lower bound: S &gt;: T means S is a <em>super-type</em> of T, and </li>
-<li>Mixed bound: S &gt;: T1 &lt;: T2 means S is any type between T1 and T2.</li>
-</ul>
-<h2 id="Variance">Variance</h2><p>Both functions and classes can be parameterized by type parameters, and <em>Variance</em> refers how the sub-typing relationship between them relates to the sub-typing relationship between their type parameters. </p>
-<p>Say <code>C[T]</code> is a parametric type and <code>A &lt;: B</code>, there are three possible relationships between <code>C[A]</code> and <code>C[B]</code>:</p>
-<ul>
-<li>C is <em>covariant</em> if <code>C[A] &lt;: C[B]</code>,</li>
-<li>C is <em>contravariant</em> if <code>C[A] &gt;: C[B]</code>, and</li>
-<li>C is <em>nonvariant</em> otherwise.</li>
-</ul>
-<p>There is a syntax in Scala to declare the variance of a type by annotating the type parameter:</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[+<span class="type">A</span>] </span>&#123; ... &#125; <span class="comment">// C is covariant</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[-<span class="type">A</span>] </span>&#123; ... &#125; <span class="comment">// C is contravariant</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">C</span>[<span class="type">A</span>]  </span>&#123; ... &#125; <span class="comment">// C is nonvariant</span></div></pre></td></tr></table></figure>
-<h2 id="Functions">Functions</h2><p>Assume <code>IntSet</code> is the base class for <code>Empty</code> and <code>NonEmpty</code>, i.e. <code>IntSet &gt;: NonEmpty</code> and <code>IntSet &gt;: Empty</code>. Consider two function types <code>type F1 = IntSet =&gt; NonEmpty</code> and <code>type F2 = NonEmpty =&gt; IntSet</code>, what’s the sub-typing relationship between <code>F1</code> and <code>F2</code>?</p>
-<p>Let’s try to explain it intuitively using <em>the Liskov Substitution Principle</em>:</p>
-<blockquote>
-<p>If <code>A :&lt; B</code>, then everything one can do with a value of type <code>B</code>, one should also be able to do with a value of type <code>A</code>.</p>
-</blockquote>
-<p>For functions, it means that it is safe to replace a function with the type <code>F_super</code> with another one with the type <code>F_sub</code>. The function arguments of <code>F_super</code> should also be accepted by <code>F_sub</code>, which means <code>F_sub</code> should accept a more general type of arguments. For any expression that takes the result of <code>F_super</code> as an parameter, it should also accept the result of <code>F_sub</code>, which means <code>F_sub</code> should return a more specific type of result. Therefore, we have <code>F1 &lt;: F2</code>. </p>
-<blockquote>
-<p>Functions are contravariant in their argument type(s) and covariant in their result type.</p>
-</blockquote>
-<p>In general, If <code>A1 &gt;: A2</code> and <code>B1 &lt;: B2</code> then <code>A1 =&gt; B1 &lt;: A2 =&gt; B2</code>. The same goes for the functions that take functions as arguments. For example, <code>(A2 =&gt; B2) =&gt; B1 &lt;: (A1 =&gt; B1) =&gt; B2</code> if <code>A1 &gt;: A2</code> and <code>B1 &lt;: B2</code>. And there is a nice trick to determine the variance of a type: <em>a position is covariant if it is on the left side of an even number of arrows</em>. </p>
-<h2 id="Classes">Classes</h2><p>We know that functions are objects with <code>apply</code> method in Scala. The function type <code>T =&gt; U</code> is defined in term of the <code>Function1</code> trait as:</p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> scala</div><div class="line"><span class="class"><span class="keyword">trait</span> <span class="title">Function1</span>[-<span class="type">T</span>, +<span class="type">U</span>] </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(x: <span class="type">T</span>): <span class="type">U</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>The Scala compiler will check the variance of a class with similar rules as the variance rule of function types:</p>
-<ul>
-<li><em>Covariant</em> type parameters can only appear in method results.</li>
-<li><em>Contravariant</em> type params can only appear in method args.</li>
-<li><em>Invariant</em> type params can appear everywhere</li>
-</ul>
-<h2 id="Making_a_Class_Covariant">Making a Class Covariant</h2><blockquote>
-<p>Roughly speaking, a type that accepts mutations of its elements should not be covariant.</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">NonEmpty[] a = <span class="keyword">new</span> NonEmpty[]&#123;<span class="keyword">new</span> NonEmpty(<span class="number">1</span>, Empty, Empty)&#125;;</div><div class="line">IntSet [] b = a;</div><div class="line">b[<span class="number">0</span>] = Empty;        <span class="comment">// throw an exception</span></div><div class="line">NonEmpty s = a[<span class="number">0</span>]</div></pre></td></tr></table></figure>
-<p>In Java, Arrays are covariant, which means <code>NonEmpty[] &lt;: IntSet[]</code>. Therefore, it is possible assign a ref of the subtype to a ref of the super-type, which is clearly problematic (see <code>IntSet [] b = a;</code>). Line 3 would throw an exception, which has runtime cost. </p>
-<figure class="highlight scala"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">val</span> a: <span class="type">Array</span>[<span class="type">NonEmpty</span>] = <span class="type">Array</span>(<span class="keyword">new</span> <span class="type">NonEmpty</span>(<span class="number">1</span>, <span class="type">Empty</span>, <span class="type">Empty</span>))</div><div class="line"><span class="keyword">val</span> b: <span class="type">Array</span>[<span class="type">IntSet</span>] = a</div><div class="line">b(<span class="number">0</span>) = <span class="type">Empty</span></div><div class="line"><span class="keyword">val</span> s: <span class="type">NonEmpty</span> = a(<span class="number">0</span>)</div></pre></td></tr></table></figure>
-<p>In Scala, Arrays are not covariant, so the compiler would complain on Line 2 instead.
-However, immutable types can be covariant, if some conditions on methods are met. </p>
-<ul>
-<li>Covariant type params may appear in lower bounds of method type params</li>
-<li>Contravariant type params may appear in upper bounds of method</li>
-</ul>
-<hr>
-<h2 id="Reference">Reference</h2><ul>
-<li><a href="https://class.coursera.org/progfun-004/lecture/83" target="_blank" rel="external">Coursera Functional Programming in Scala</a></li>
-<li><a href="http://zh.wikipedia.org/wiki/%E5%8D%8F%E5%8F%98%E4%B8%8E%E9%80%86%E5%8F%98" target="_blank" rel="external">Wikipedia</a></li>
-</ul>
-<h2 id="History">History</h2><ul>
-<li>Jun 6, 2014 04:00:56 First commit</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2014/05/28/the-last-thing-d-needs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="某雲">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/uploads/avatar.png">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="云麓漫钞">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2014/05/28/the-last-thing-d-needs/" itemprop="url">
-                  The Last Thing D Needs
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-05-28T00:00:00-04:00">
-                2014-05-28
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2014-05-17T00:00:00-04:00">
+                2014-05-17
               </time>
             
 
@@ -1964,8 +857,8 @@ However, immutable types can be covariant, if some conditions on methods are met
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2014/05/28/the-last-thing-d-needs/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/05/28/the-last-thing-d-needs/" itemprop="commentCount"></span>
+                <a href="/2014/05/17/nvm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2014/05/17/nvm/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -1993,122 +886,384 @@ However, immutable types can be covariant, if some conditions on methods are met
       
         
           
-            <p>“I am not here to bash C++” — Scott Meyers, 2014</p>
-<p>今年DConf把Scott Meyers (Effetive C++系列的作者) 请过来做<a href="http://www.ustream.tv/recorded/47947981" target="_blank" rel="external">演讲</a>。打开前我还疑惑地以为Meyers难道开始D语言的传道了，可是一开始看到他一脸假正经地宣称自己不是过来羞辱C++的，我就明白这是又一出挂羊头卖狗肉的C++鞭笞秀了XDDDD。抱着娱乐的心情看完，却发现感想远超预期。也许是因为场合不同，这次Meyers的演讲完全跳出了他之前”Meyers knows all”的老调，而是通过自己对C++的理解进行了相当有趣的吐槽，而且中间插的段子也是笑点十足。强烈推荐给关注近期C++发展的程序员。</p>
-<p>下面是对这次演讲的一些笔记。</p>
-<p>———</p>
-<h2 id="C++_的坑">C++ 的坑</h2><p>C++鞭笞秀的标准起手式就是陈列语言大坑，这次也不例外。</p>
-<h3 id="初始化_Initialization">初始化 Initialization</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">int</span> x1;                <span class="comment">// unknown</span></div><div class="line"><span class="keyword">int</span> x2;                <span class="comment">// (at global scope) 0</span></div><div class="line"><span class="keyword">static</span> <span class="keyword">int</span> x3;         <span class="comment">// 0</span></div><div class="line"></div><div class="line">&#123;</div><div class="line">	<span class="keyword">int</span> x4;            <span class="comment">// unknown</span></div><div class="line">	…</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">int</span> a1[<span class="number">100</span>];           <span class="comment">// unknown</span></div><div class="line"><span class="keyword">int</span> a2[<span class="number">100</span>];           <span class="comment">// (at global scope) 0</span></div></pre></td></tr></table></figure>
-<p>变量的初始化是个很基础的话题。会得到上面的结果的原因也简单：未被初始化的全局变量和静态变量都会被放去BSS段(BSS segment)，而BSS段的数据都是0初始化的。背后的道理也很单纯：为这些变量的初始化并不会带来运行时的代价(runtime cost)。C++标准(准确地说，C标准)的原则是，只要不损害运行时的性能，编译器都很愿意为程序员提供方便。然后这样就带来了变量初始化行为不一致的问题。尽管现在所有的代码规范都强烈抵制全局变量和静态变量，并且一再强调定义变量时初始化，但是只要是人都会有失误的时候。而标准作出了取舍：它以程序员发生错误的可能性作为代价，换取了更好的运行性能。背后的经济学原理就是机器的时间要比程序员的时间更值钱。</p>
-<p>这样的取舍也有一定的道理，而如果打之为止的话，这原则也很好地解释了一致性。可是我们C++有容器，而容器是默认初始化为0的，即使这带来了运行时的代价……</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; a(<span class="number">100</span>);  <span class="comment">// 0</span></div></pre></td></tr></table></figure>
-<h3 id="类型推导_Type_Deduction">类型推导 Type Deduction</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> <span class="keyword">int</span> cx = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="keyword">auto</span> my_cx1 = cx;                 <span class="comment">// int</span></div><div class="line"><span class="keyword">decltype</span>(cx) my_cx2 = cx;         <span class="comment">// const int</span></div></pre></td></tr></table></figure>
-<p>在这里可以解释为，<code>my_cx1</code>是另外一个独立的变量，它使用了<code>cx</code>作为初始值，并不代表它应该有完全一样的类型。使用<code>decltype</code>，就代表你想完全照用<code>cx</code>的类型。这两条是不同的规则，而符合逻辑，没有问题。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">f1</span><span class="params">(T param)</span></span>;</div><div class="line"></div><div class="line">f1(cx);                           <span class="comment">// T: int</span></div><div class="line"></div><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">f2</span><span class="params">(T&amp; param)</span></span>;</div><div class="line"></div><div class="line">f2(cx);                           <span class="comment">// T: const int</span></div></pre></td></tr></table></figure>
-<p>这里<code>f1</code>的逻辑和<code>auto</code>类似。<code>T</code>在函数里是一个独立的新变量，因此我们只需要把<code>cx</code>的数据复制到<code>T</code>，然而不需要要求<code>T</code>也带有常量性(constness)。而<code>f2</code>中，我们引用了某块内存里的某个变量，因此<code>T</code>必须保留它原来的常量性，这也很符合逻辑</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">f3</span><span class="params">(T&amp;&amp; param)</span></span>;</div><div class="line"></div><div class="line">f3(cx);                           <span class="comment">// T: const int &amp;</span></div></pre></td></tr></table></figure>
-<p>注意<code>T&amp;&amp;</code>在C++ 11前的是非法的：你不能为一个引用再生成一个引用 (you are not allowed to take a reference to a reference)。</p>
-<p>然而C++ 11引入了新的<em>reference collapsing rules</em></p>
-<ul>
-<li><code>A&amp; &amp; -&gt; A&amp;</code></li>
-<li><code>A&amp; &amp;&amp; -&gt; A&amp;</code></li>
-<li><code>A&amp;&amp; &amp; -&gt; A&amp;</code></li>
-<li><code>A&amp;&amp; &amp;&amp; -&gt; A&amp;&amp;</code></li>
-</ul>
-<p>根据模版参数推导规则，<code>cx</code>是类型为<code>A</code>的左值(lvalue)，因此<code>T</code>会根据上面的reference collapsing rules得到<code>A&amp;</code>的类型。这是为了实现<em>perfect forwarding</em>的一个hack，具体细节可以参考<a href="http://thbecker.net/articles/rvalue_references/section_08.html" target="_blank" rel="external">Perfect Forwarding: The Solution</a>。(Meyers: still not here to bash XD!)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">auto</span> lam = [cx] &#123; cx = <span class="number">10</span>; &#125;    <span class="comment">// error!</span></div><div class="line"></div><div class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="keyword">const</span> <span class="keyword">int</span> cx;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>当考虑到lambda时，事情就变得更有乐趣了。当我们用<code>capture</code>时，编译器实际上会被背后自动生成一个类，并把<code>cx</code>从原来的scope里复制到这个类的同名数据成员中。尽管我们逻辑上觉得，这样的capture不过也是简单的复制数据，所以类里的数据成员<code>cx</code>的类型应该还是<code>int</code>。但是实际上数据成员的类型是<code>const int</code>，所以上面的例子是不是编译的……这也是C++唯一的地方(据Meyers宣称)，当你尝试把一个变量的内容复制到一个新的独立变量时，会保存原变量的常量性的。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">auto</span> lam = [cx = cx] &#123; cx = <span class="number">10</span>; &#125;    <span class="comment">// error!</span></div><div class="line"></div><div class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="keyword">int</span> cx;    <span class="comment">// but acts like const int</span></div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span> <span class="keyword">const</span></span></div><div class="line">    &#123; cx = <span class="number">0</span>; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>而C++ 14新加入的<em>lambda captures expressions</em>使我们可以用<code>cx</code>初始化一个lambda内的<code>cx</code>变量。而生成类里的<code>cx</code>数据成员也会变成<code>int</code>。但是很遗憾，即使是这样，你也不能为lambda内的<code>cx</code>进行赋值。因为这个类还会自动生成一个<code>()</code>操作符函数，而这个函数是<code>const</code>的，所以你不能对数据变量<code>cx</code>进行改变……怎么解决这个问题？很简单，你只需要如下：(Meyers: still not here to bash XDDDD!!!!!)</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">auto</span> lam2 = [cx = cx]() <span class="keyword">mutable</span> &#123; cx = <span class="number">10</span>; &#125;</div><div class="line"></div><div class="line"><span class="keyword">class</span> UpToTheCompiler &#123;</div><div class="line"><span class="keyword">private</span>:</div><div class="line">    <span class="keyword">int</span> cx;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">operator</span><span class="params">()</span><span class="params">()</span></span></div><div class="line">    &#123; cx = <span class="number">0</span>; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>总结上面，对于<code>const int cx = 0</code>来说，根据上下文总共只有6种类型推导的方式:</p>
-<ul>
-<li><code>auto</code> &amp; <code>lambda int capture</code> = <code>int</code></li>
-<li><code>decltype</code> = <code>const int</code></li>
-<li><code>template(T param)</code> = <code>int</code></li>
-<li><code>template(T&amp; param)<code>=</code>const int</code></li>
-<li><code>template(T&amp;&amp; param)<code>=</code>const int &amp;</code></li>
-<li><code>lambda (by-value capture)</code> = <code>const int</code></li>
-</ul>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">auto</span> x1 = <span class="number">0</span>;            <span class="comment">// int</span></div><div class="line"><span class="function"><span class="keyword">auto</span> <span class="title">x2</span><span class="params">(<span class="number">0</span>)</span></span>;             <span class="comment">// int</span></div><div class="line"><span class="keyword">auto</span> x3 = &#123; <span class="number">0</span> &#125;;        <span class="comment">// initializer_list&lt;int&gt;</span></div><div class="line"><span class="keyword">auto</span> x4 &#123; <span class="number">0</span> &#125;;          <span class="comment">// initializer_list&lt;int&gt;</span></div><div class="line"></div><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(T param)</span></span>;</div><div class="line"></div><div class="line">f(&#123;<span class="number">0</span>&#125;);                 <span class="comment">// error! &#123;0&#125; has no type</span></div></pre></td></tr></table></figure>
-<p>最后这个例子说明了<code>auto</code>其实是有自己的一套推导法则的，只是Meyers也没办法解释这背后的逻辑了……</p>
-<h3 id="Inheritance_继承">Inheritance 继承</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">class</span> Base &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doBaseWork</span><span class="params">()</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">class</span> Derived: <span class="keyword">public</span> Base&lt;T&gt; &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doDerivedWork</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        doBaseWork();</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>C++对于模板内符号的<em>two-phase name lookup</em>应该是C++ gotchas里的经典场景了。
-上面的代码是无法编译的，编译器会要求你显式地注明<code>doBaseWork()</code>依赖于类型参数<code>T</code>。<code>this-&gt;doBaseWork()</code>或者<code>Base::doBaseWork()</code>都能通过编译。但是之后出现了<code>Base</code>对于<code>int</code>类型的特化(specialization)的话，在实体化(instantiating)模版时还是一样会出错。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;&gt;</div><div class="line"><span class="keyword">class</span> Base&lt;<span class="keyword">int</span>&gt; &#123;&#125;;</div><div class="line"></div><div class="line">Derived&lt;<span class="keyword">int</span>&gt; d;</div><div class="line">d.doDerivedWork();    <span class="comment">// fail</span></div></pre></td></tr></table></figure>
-<p>这个问题另外一个有趣的变体是，如果不幸打错字，將<code>doBaseWork</code>打成<code>doBaseWrk</code>的话，会怎么样。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">class</span> Base &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doBaseWork</span><span class="params">()</span></span>;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div><div class="line"><span class="keyword">class</span> Derived: <span class="keyword">public</span> Base&lt;T&gt; &#123;</div><div class="line"><span class="keyword">public</span>:</div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">doDerivedWork</span><span class="params">()</span></span></div><div class="line">    &#123;</div><div class="line">        doBaseWrk();</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>这不是一个容易回答的问题。如果编译器认为这是笔误，第一个phase就诊断这是一个错误的话，之后就不能通过特化来提供<code>doBaseWrk</code>函数了。如果编译器选择推迟name lookup直到实体化，那么我就就把诊断库(library)的责任推给了用户。</p>
-<p>C++的解决方案是：模板的作者拥有选择权：</p>
-<ul>
-<li>只写<code>doBaseWrk()</code>的话，那么编译器在解释（parse）模板时就进行符号查找(lookup name)。</li>
-<li><code>this-&gt;doBaseWrk()</code>或者<code>BasedoBaseWrk()</code>的话，编译器会推迟到实体化模板时才进行符号查找。</li>
-</ul>
-<h3 id="Computational_Complexity_计算复杂度">Computational Complexity 计算复杂度</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">auto</span> it1 = <span class="built_in">std</span>::binary_search(v.begin(), v.end(), <span class="number">10</span>);  <span class="comment">// O(lg n)</span></div><div class="line"></div><div class="line"><span class="keyword">auto</span> it2 = <span class="built_in">std</span>::binary_search(li.begin(), li.end(), <span class="number">10</span>); <span class="comment">// O(n); standard: O(lg n)</span></div></pre></td></tr></table></figure>
-<p>为什么标准中二分查找链表的复杂度是<code>O(lg n)</code>？因为这个复杂度是基于比较的次数的……</p>
-<h3 id="Specifications">Specifications</h3><p>C++标准中规定了，除了满足基本容器的要求外，连续容器(sequence container)还需要满足另外的16项要求。可是看一下STL里面的5种连续容器，它们是否都满足这16项要求呢？</p>
-<ul>
-<li>array: no</li>
-<li>deque: yes</li>
-<li>forward_list: 只满足了1条……</li>
-<li>list: yes</li>
-<li>vector: yes</li>
-</ul>
+            <h2 id="安装NVM">安装NVM</h2><pre><code>curl http<span class="variable">s:</span>//raw.github.<span class="keyword">com</span>/creationix/nvm/master/install.<span class="keyword">sh</span> | <span class="keyword">sh</span>
+</code></pre><h2 id="使用Node-js">使用Node.js</h2><pre><code>nvm install <span class="number">0.10</span><span class="number">.28</span>
+nvm use <span class="number">0.10</span><span class="number">.28</span>
+nvm alias <span class="keyword">default</span> <span class="number">0.10</span><span class="number">.28</span>
+</code></pre><h2 id="使所有用户共用同一个Node-js版本">使所有用户共用同一个Node.js版本</h2><pre><code>n=<span class="variable">$(</span>which node);
+n=<span class="variable">${</span>n<span class="string">%/bin/</span>node};
+chmod -<span class="constant">R</span> <span class="number">755</span> <span class="variable">$n</span>/bin/*;
+sudo cp -r <span class="variable">$n</span>/{bin,<span class="class"><span class="keyword">lib</span>,<span class="title">share</span>} /<span class="title">usr</span>/<span class="title">local</span></span>
+</code></pre><p>NVM默认把Node.js安装到用户的Home目录下。为了使所有用户都能使用同一份Node.js的，上述命令会把当前激活的Node.js复制到<code>/usr/local/bin</code>目录下,并把权限设置成所有用户都能访问。如果你之后激活了另外一个版本(<code>nvm use vXX.XX.XX</code>)并向让它成为全局的Node.js版本，那只需要重新执行一遍上面的命令。</p>
+<p>EOF</p>
 <hr>
-<h2 id="总结">总结</h2><p>Fred Brooks提到软件设计中的复杂性可以分为两种:</p>
-<ul>
-<li>Essential complexity</li>
-<li>Accidental complexity</li>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="https://www.digitalocean.com/community/articles/how-to-install-node-js-with-nvm-node-version-manager-on-a-vps" target="_blank" rel="external">How To Install Node.js with NVM (Node Version Manager) on a VPS</a></li>
 </ul>
-<p>Meyers认为在编程语言设计中，essential complexity来自设计方向的冲突:</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2013/09/14/xna-vs2012/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2013/09/14/xna-vs2012/" itemprop="url">
+                  如何在VS2012中创建XNA项目
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2013-09-14T00:00:00-04:00">
+                2013-09-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/dev/" itemprop="url" rel="index">
+                    <span itemprop="name">dev</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2013/09/14/xna-vs2012/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2013/09/14/xna-vs2012/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>XNA是渣软已经官方宣布死亡的一套游戏开发工具，正因为如此官方只支持到VS2010，如果想用更先进的VS2012来开发XNA程序的话，就必须又折腾一番，真是够了……</p>
 <ul>
-<li>Simplicity and regular vs. expressiveness.</li>
-<li>Abstraction and portability vs. efficiency.</li>
-<li>New approaches vs. compability with legacy systems.</li>
-<li>Expressiveness vs. ability to issue good diagnostics.</li>
+<li>你必须先安装VS2010（Orz），从节省时间考虑就装个C# Express好了</li>
+<li>安装最新的<a href="http://www.xbox.com/en-US/LIVE/PC/DownloadClient" target="_blank" rel="external">Windows Marketplace Client</a></li>
+<li>安装XNA Game Studio 4.0</li>
+<li>将XNA的扩展文件夹从VS2010的路径拷贝到VS2012，如</li>
 </ul>
-<p>然而C++本身在设计时带来了很多不必要的accidental complexity，例如在演讲里提到的：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">xcopy /e "C:<span class="symbol">\P</span>rogram Files (x86)<span class="symbol">\M</span>icrosoft Visual Studio 10.0<span class="symbol">\C</span>ommon7<span class="symbol">\I</span>DE<span class="symbol">\E</span>xtensions<span class="symbol">\M</span>icrosoft<span class="symbol">\X</span>NA Game Studio 4.0" "C:<span class="symbol">\P</span>rogram Files (x86)<span class="symbol">\M</span>icrosoft Visual Studio 11.0<span class="symbol">\C</span>ommon7<span class="symbol">\I</span>DE<span class="symbol">\E</span>xtensions<span class="symbol">\M</span>icrosoft<span class="symbol">\X</span>NA Game Studio 4.0"</div></pre></td></tr></table></figure>
 <ul>
-<li><code>int</code> <em>有时</em>会被初始化为0</li>
-<li>By-value lambda capture <em>有时</em>会保持被捕捉变量的常量性</li>
-<li><code>mutable lambdas</code> 必须声明参数列表，而non-mutable的不用</li>
-<li>花括号初始化(braced initializer) <em>有时</em>会带有类型</li>
-<li>计算复杂度的保证<em>有时</em>很微妙</li>
-<li>容器的API命名不完全一致</li>
-<li><code>sort</code> <em>有时</em>是stable的</li>
-<li>容器的要求在<em>有时</em>是被要求的</li>
-<li>很多很多</li>
+<li>打开扩展文件夹里的<code>extension.vsixmanifest</code>，将里面的<code>Version</code>改成<code>11</code></li>
+<li>刷新一下VS</li>
 </ul>
-<p>C++主要的问题在于：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">"C:<span class="symbol">\P</span>rogram Files (x86)<span class="symbol">\M</span>icrosoft Visual Studio 11.0<span class="symbol">\C</span>ommon7<span class="symbol">\I</span>DE<span class="symbol">\d</span>evenv.exe" /setup</div></pre></td></tr></table></figure>
 <ul>
-<li>太复杂以致难以被修复</li>
-<li>需要兼容大量陈旧代码</li>
-<li>用户和标准委员会并没有很大的兴趣/精力去修复这些问题</li>
+<li>到<code>%LocalAppData%\Microsoft\VisualStudio\11.0\Extensions</code>目录下，把<code>extensionSdks.en-US.cache</code>和<code>extensions.en-US.cache</code>这样的缓存文件删除，不然新建项目时XNA扩展会无法加载。</li>
 </ul>
-<p>对于Meyers来说，他不了解D，不设计编程语言，不进行软件开发(很多年)，偶尔干干咨询(很多年前)，经常作为培训的教师，不停地给人解释概念。因此对于他来说，容易解释的东西就是好的 (easy to explain = good)。然而从<em>piecemeal design philosophy</em>来说，C++的符合要求的：每条语言规则单独来说都是容易被解释或者辩解的。然后从<em>holistic design pholosophy</em>的角度，每条语言规则除了能被单独解释外，它在别的规则的上下文里，也应该同样易于解释。</p>
-<p>常见的C++设计的正当化理由有：</p>
-<ol>
-<li>与C兼容</li>
-<li>最大化效率</li>
-<li>不用就不花钱 (you don’t pay for what you don’t use)</li>
-<li>信任用户</li>
-<li>预防可能的用户错误</li>
-<li>让功能更泛用</li>
-<li>不要限制编译器</li>
-<li>相比起编译器开发者，更关注用户</li>
-<li>保持后向兼容性</li>
-<li>与其他功能保持一致</li>
-</ol>
-<p>这些理由单独使用时，都能够让某个语言特性得到正当化。然而4、5、7和8实际上可以为所有语言特性进行辩解，而它们本身就是容易相互冲突的。</p>
-<p>然而作为语言用户，使用C++很容易让用户把大量精力花费在<code>tool use</code>的层面，然而相对花费在<code>tool application</code>的时间就少了很多。Meyers用自己的经验来说，他写了很多那么多本C++系列的书籍，大部分的内容都关注<code>tool use</code>，而真正使用语言特性来实现high-level ideas的<code>tool application</code>实际上很少。因为他认为D语言最不需要的东西，就是他这样的人。</p>
-<p>另外某个听众提问了最新的Effective Modern C++推出时间，Meyers预计会在今年的9月份推出。但是他不认为D会议的听众会需要这本书 XDDDD。</p>
+<p>这里有个小trick，当VS挂掉而你想知道为什么时，使用下面的命令启动VS</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">"C:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\devenv.exe"</span> /log</div></pre></td></tr></table></figure>
+<p>这样的话VS就会生成debug log到<code>%AppData%\Microsoft\VisualStudio\11.0\ActivityLog.xml</code>了。</p>
+<p>EOF</p>
 <hr>
-<h1 id="Reference">Reference</h1><ul>
-<li><a href="http://www.ustream.tv/recorded/47947981" target="_blank" rel="external">Keynote: The Last Thing D Needs - Scott Meyers</a></li>
-<li><a href="https://isocpp.org/blog/2012/11/universal-references-in-c11-scott-meyers" target="_blank" rel="external">Universal References in C++11</a></li>
-<li><a href="http://thbecker.net/articles/rvalue_references/section_01.html" target="_blank" rel="external">C++ Rvalue References Explained</a></li>
-<li><a href="http://eli.thegreenplace.net/2012/02/06/dependent-name-lookup-for-c-templates/" target="_blank" rel="external">Dependent name lookup for C++ templates</a></li>
+<h2 id="Reference">Reference</h2><ul>
+<li><a href="http://stackoverflow.com/questions/10881005/how-to-install-xna-game-studio-on-visual-studio-2012" target="_blank" rel="external">How to install XNA game studio on Visual Studio 2012?</a></li>
+<li><a href="http://stackoverflow.com/questions/12849107/how-to-install-the-xna-game-studio-4-0-in-windows-8" target="_blank" rel="external">How to install the XNA Game Studio 4.0 in Windows 8?</a></li>
+<li><a href="http://blogs.msdn.com/b/astebner/archive/2012/02/29/10274694.aspx" target="_blank" rel="external">How to work around a possible XNA Game Studio or Windows Phone SDK install failure on Windows 8</a></li>
 </ul>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://zettoone.github.io/2011/11/19/itunes-tag/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="某雲">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云麓漫钞">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2011/11/19/itunes-tag/" itemprop="url">
+                  iTunes乱码处理
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2011-11-19T00:00:00-05:00">
+                2011-11-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/" itemprop="url" rel="index">
+                    <span itemprop="name">cn</span>
+                  </a>
+                </span>
+
+                
+                
+                  , 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/cn/misc/" itemprop="url" rel="index">
+                    <span itemprop="name">misc</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2011/11/19/itunes-tag/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2011/11/19/itunes-tag/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>使用Mac时一個很头疼的问题就是mp3导入iTunes时的各种乱码。搜索后并没有发现很好的解决方法，所以就还是按在Ubuntu时的方式来料理了。不知道大家有没有更简单的方式。</p>
+<p>首先是安装Mutagen</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">pip <span class="keyword">install</span> mutagen</div></pre></td></tr></table></figure>
+<p>使用方法时配合find命令即可，我比较喜欢的方式是：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">find</span> . -iname <span class="string">"*.mp3"</span> -execdir mid3iconv -e gbk --<span class="built_in">remove</span>-v1 &#123;&#125; \;</div></pre></td></tr></table></figure>
+<p>效果是转换当前目录及子目录下的所有mp3标签为Unicode编码，并同时填满ID3v2, APEv2标签。</p>
+<p>-e gbk 参数只针对gbk编码，其他编码的文件则相应修改，如 -e big5 或者 -e gb18030。</p>
+<p>--remove-v1 参数则删除ID3v1标签，因为ID3v1不支持中文Unicode 编码Orz……所以如果播放器只支持ID3v1标签的话就会遇到问题——一片空白，这也是我还没想到解决办法的地方。不过就iTunes来说这样就足够了。</p>
+<hr>
+<p>EDIT1(May 30, 2014 12:42:34):</p>
+<p>在OS X Mavericks下曾经遇到过<code>dyld: Library not loaded: /usr/local/homebrew/homebrew/opt/readline/lib/libreadline.6.2.dylib</code>这样的问题，我解决的方法是用下面的命令重新安装<code>readline</code>:</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">brew </span><span class="keyword">install </span>--<span class="keyword">build-from-source </span>readline</div></pre></td></tr></table></figure>
 
           
         
@@ -2146,10 +1301,6 @@ However, immutable types can be covariant, if some conditions on methods are met
   </section>
 
   
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
 
           
           </div>
@@ -2192,7 +1343,7 @@ However, immutable types can be covariant, if some conditions on methods are met
           
             <div class="site-state-item site-state-posts">
               <a href="/archives">
-                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">posts</span>
               </a>
             </div>
@@ -2203,7 +1354,7 @@ However, immutable types can be covariant, if some conditions on methods are met
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-count">7</span>
                 <span class="site-state-item-name">categories</span>
               </a>
             </div>
@@ -2214,7 +1365,7 @@ However, immutable types can be covariant, if some conditions on methods are met
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">20</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">tags</span>
               </a>
             </div>
@@ -2283,7 +1434,7 @@ However, immutable types can be covariant, if some conditions on methods are met
         <div class="copyright" >
   
   &copy;  2011 - 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
